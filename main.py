@@ -1,4 +1,8 @@
 import graph_generator
+import graph_ui
+from controller import *
 
-
-print("In progress...")
+generator = GraphGenerator()
+controller = Controller(generator)
+ui = graph_ui.GraphUI(controller)
+ui.run()
