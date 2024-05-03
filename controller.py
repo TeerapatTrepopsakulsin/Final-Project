@@ -6,20 +6,21 @@ from graph_generator import GraphGenerator, DefaultGraph
 
 class Controller:
     def __init__(self, graph_generator: GraphGenerator):
+        self.display = DefaultGraph()
         self.generator = graph_generator
-        self.display = None
 
     def initialise(self, frame: ttk.Frame):
-        self.display = DefaultGraph(frame)
-
+        # initialise the generator
         self.generator.graph = 'Histogram'
-        self.histgen = self.generator.get_generator(frame)
+        self.generator.start_year = 2019
+        self.generator.end_year = 2019
+        generator = self.generator.get_generator()
 
-        hist = self.histgen.generate()
+        hist = generator.generate(frame)
 
-        graph1 = self.display.graph1()
+        graph1 = self.display.graph2(frame)
 
-        des_stat = self.display.stat()
+        des_stat = self.display.stat(frame)
 
         return hist, graph1, des_stat
 
@@ -27,6 +28,10 @@ class Controller:
         self.generator.graph = 'Histogram'
         self.generator.start_year = year
         self.generator.end_year = year
-        self.histgen = self.generator.get_generator(frame)
-        hist = self.histgen.generate()
+        self.histgen = self.generator.get_generator()
+        hist = self.histgen.generate(frame)
         return hist
+
+
+if __name__ == '__main__':
+    import main

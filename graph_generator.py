@@ -27,16 +27,16 @@ class GraphGenerator(ABC):
         self.__graph = 'Histogram'
         self.__og_df = DF_OC
 
-    def get_generator(self, frame: ttk.Frame) -> 'GraphGenerator':
+    def get_generator(self) -> 'GraphGenerator':
         attr = copy.copy(self.__dict__)
         if self.graph == 'Line Graph':
             return LinegraphGenerator()
         elif self.graph == 'Histogram':
-            return HistogramGenerator(frame, **attr)
+            return HistogramGenerator(**attr)
         elif self.graph == 'Bar graph':
             return LinegraphGenerator()
 
-    def generate(self):
+    def generate(self, frame: ttk.Frame):
         pass
 
     @property
@@ -97,13 +97,12 @@ class BargraphGenerator(GraphGenerator):
 
 
 class HistogramGenerator(GraphGenerator):
-    def __init__(self, frame: ttk.Frame, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
         self.__dict__.update(kwargs)
-        self.frame = frame
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self):
+    def generate(self, frame: ttk.Frame):
         # figure
         fig = plt.figure()
 
@@ -115,7 +114,7 @@ class HistogramGenerator(GraphGenerator):
         plt.ylabel('Frequency')
 
         # Tkinter canvas that contain the figure
-        canvas = FigureCanvasTkAgg(fig, master=self.frame)
+        canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
         return canvas.get_tk_widget()
