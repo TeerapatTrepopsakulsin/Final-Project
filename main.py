@@ -1,8 +1,9 @@
-import graph_generator
-import graph_ui
-from controller import *
+"""Main block"""
+from graph_generator import GraphGenerator
+from graph_ui import GraphUI
+from controller import Controller
 
 generator = GraphGenerator()
 controller = Controller(generator)
-ui = graph_ui.GraphUI(controller)
+ui = GraphUI(controller)
 ui.run()
