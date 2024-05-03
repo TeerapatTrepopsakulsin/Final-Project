@@ -30,14 +30,22 @@ class GraphGenerator(ABC):
     def get_generator(self) -> 'GraphGenerator':
         attr = copy.copy(self.__dict__)
         if self.graph == 'Line Graph':
-            return LinegraphGenerator()
+            return LinegraphGenerator(**attr)
         elif self.graph == 'Histogram':
             return HistogramGenerator(**attr)
         elif self.graph == 'Bar graph':
-            return LinegraphGenerator()
+            return LinegraphGenerator(**attr)
+        elif self.graph == 'Stat':
+            return StatGenerator(**attr)
 
     def generate(self, frame: ttk.Frame):
         pass
+
+    def set_all(self):
+        self.og_df = DF
+
+    def set_only_country(self):
+        self.og_df = DF_OC
 
     @property
     def start_year(self):
@@ -89,11 +97,23 @@ class GraphGenerator(ABC):
 
 
 class LinegraphGenerator(GraphGenerator):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.__dict__.update(kwargs)
+        self.df_gen = DataframeGenerator(**self.__dict__)
+
+    def generate(self, frame: ttk.Frame):
+        pass
 
 
 class BargraphGenerator(GraphGenerator):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.__dict__.update(kwargs)
+        self.df_gen = DataframeGenerator(**self.__dict__)
+
+    def generate(self, frame: ttk.Frame):
+        pass
 
 
 class HistogramGenerator(GraphGenerator):
@@ -107,7 +127,7 @@ class HistogramGenerator(GraphGenerator):
         fig = plt.figure()
 
         # histogram
-        g7_df = self.df_gen.generate()
+        g7_df = self.df_gen.generate(frame)
         hist = g7_df['death_rate'].hist(bins=20)
         plt.title('Histogram for death rate')
         plt.xlabel('Death rate (deaths per 100,000 people)')
@@ -120,14 +140,41 @@ class HistogramGenerator(GraphGenerator):
         return canvas.get_tk_widget()
 
 
+class StatGenerator(GraphGenerator):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.__dict__.update(kwargs)
+        self.df_gen = DataframeGenerator(**self.__dict__)
+
+    def generate(self, frame: ttk.Frame):
+        df = self.df_gen.generate(frame)
+        stat_df = df[['death_total', 'death_rate']]
+        stat_df = stat_df.rename(columns={'death_total': 'Total deaths', 'death_rate': 'Death rate'})
+        des_stat = stat_df.describe()
+        col = [''] + list(des_stat.columns)
+        table = ttk.Treeview(frame, columns=col, show='headings')
+
+        for column in table["column"]:
+            table.heading(column, text=column)
+            table.column(column, anchor=tk.CENTER)
+
+        des_stat_list = stat_df.describe().reset_index().to_numpy().tolist()
+
+        for row in des_stat_list:
+            table.insert("", "end", values=row)
+
+        return table
+
+
 class DataframeGenerator(GraphGenerator):
     def __init__(self, **kwargs):
         super().__init__()
         self.__dict__.update(kwargs)
 
-    def generate(self):
+    def generate(self, frame: tk.Frame):
         df = self.og_df
-        new_df = df[(df['Year'] >= self.start_year) & (df['Year'] <= self.end_year)]
+        new_df = df[(df['Year'] >= self.start_year) &
+                    (df['Year'] <= self.end_year)]
 
         return new_df
 
@@ -311,27 +358,6 @@ class DefaultGraph:
         canvas.draw()
 
         return canvas.get_tk_widget()
-
-    def stat(self, frame: ttk.Frame):
-        stat_df = DF_OC[['Year', 'death_total', 'death_rate']]
-        stat_df = stat_df.rename(columns={'Year': '', 'death_total': 'Total deaths', 'death_rate': 'Death rate'})
-        listBox = ttk.Treeview(frame)
-
-        desc = stat_df.describe()
-
-        listBox["column"] = list(desc.columns)
-        listBox["show"] = "headings"
-
-        for column in listBox["column"]:
-            listBox.heading(column, text=column)
-            listBox.column(column, anchor=tk.CENTER)
-
-        desc = stat_df.describe().reset_index().to_numpy().tolist()
-
-        for row in desc:
-            listBox.insert("", "end", values=row)
-
-        return listBox
 
 
 if __name__ == '__main__':
