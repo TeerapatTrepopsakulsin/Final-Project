@@ -12,7 +12,6 @@ from abc import ABC
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
 DF = pd.read_csv("data.csv")
 DF_OC = pd.read_csv("data_only_country.csv")
 
@@ -26,6 +25,7 @@ class GraphGenerator(ABC):
         self.__unit = 'death_total'
         self.__mode = 'Standard'
         self.__graph = 'Histogram'
+        self.__og_df = DF_OC
 
     def get_generator(self, frame: ttk.Frame) -> 'GraphGenerator':
         attr = copy.copy(self.__dict__)
@@ -79,6 +79,14 @@ class GraphGenerator(ABC):
     def unit(self, unit):
         self.__unit = unit
 
+    @property
+    def og_df(self):
+        return self.__og_df
+
+    @og_df.setter
+    def og_df(self, df):
+        self.__og_df = df
+
 
 class LinegraphGenerator(GraphGenerator):
     pass
@@ -93,13 +101,14 @@ class HistogramGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
         self.frame = frame
+        self.df_gen = DataframeGenerator(**self.__dict__)
 
     def generate(self):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure()
 
         # histogram
-        g7_df = DF_OC[(DF_OC['Year'] >= self.start_year) & (DF_OC['Year'] <= self.end_year)]
+        g7_df = self.df_gen.generate()
         hist = g7_df['death_rate'].hist(bins=20)
         plt.title('Histogram for death rate')
         plt.xlabel('Death rate (deaths per 100,000 people)')
@@ -112,8 +121,16 @@ class HistogramGenerator(GraphGenerator):
         return canvas.get_tk_widget()
 
 
-class DataframeGenerator:
-    pass
+class DataframeGenerator(GraphGenerator):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.__dict__.update(kwargs)
+
+    def generate(self):
+        df = self.og_df
+        new_df = df[(df['Year'] >= self.start_year) & (df['Year'] <= self.end_year)]
+
+        return new_df
 
 
 class DefaultGraph:
@@ -151,7 +168,7 @@ class DefaultGraph:
 
     def graph2(self, frame: ttk.Frame):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure()
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -171,7 +188,7 @@ class DefaultGraph:
 
     def graph2_rural(self, frame: ttk.Frame):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure()
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -189,7 +206,7 @@ class DefaultGraph:
 
     def graph2_urban(self, frame: ttk.Frame):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure()
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -211,7 +228,7 @@ class DefaultGraph:
 
         # pie chart
         g3_df = DF_OC.rename(columns={'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
-                                   'age_50_69': '50-69 years', 'age_70': '70+ years'})
+                                      'age_50_69': '50-69 years', 'age_70': '70+ years'})
 
         age_arr = ['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years']
         g3_df = g3_df.groupby(['Entity'])[age_arr].mean().mean()
@@ -232,8 +249,8 @@ class DefaultGraph:
 
         # pie chart
         g4_df = DF_OC.rename(columns={'type_pedestrian': 'pedestrian', 'type_motorvehicle': 'motor vehicle',
-                                   'type_motorcyclist': 'motorcyclist', 'type_cyclist': 'cyclist',
-                                   'type_other': 'other'})
+                                      'type_motorcyclist': 'motorcyclist', 'type_cyclist': 'cyclist',
+                                      'type_other': 'other'})
 
         type_arr = ['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other']
         g4_df = g4_df.groupby(['Entity'])[type_arr].mean().mean()
