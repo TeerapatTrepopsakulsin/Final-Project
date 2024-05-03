@@ -11,26 +11,36 @@ class Controller:
 
     def initialise(self, frame: ttk.Frame):
         # initialise the generator
-        self.generator.graph = 'Histogram'
         self.generator.start_year = 2019
         self.generator.end_year = 2019
-        generator = self.generator.get_generator()
+        self.generator.set_only_country()
 
+        self.generator.graph = 'Histogram'
+        generator = self.generator.get_generator()
         hist = generator.generate(frame)
 
-        graph1 = self.display.graph2(frame)
+        self.generator.graph = 'Stat'
+        generator = self.generator.get_generator()
+        des_stat = generator.generate(frame)
 
-        des_stat = self.display.stat(frame)
+        graph = self.display.graph2(frame)
 
-        return hist, graph1, des_stat
+        return hist, graph, des_stat
 
     def handle_select_year(self, frame: ttk.Frame, year):
-        self.generator.graph = 'Histogram'
         self.generator.start_year = year
         self.generator.end_year = year
-        self.histgen = self.generator.get_generator()
-        hist = self.histgen.generate(frame)
-        return hist
+        self.generator.set_only_country()
+
+        self.generator.graph = 'Histogram'
+        generator = self.generator.get_generator()
+        hist = generator.generate(frame)
+
+        self.generator.graph = 'Stat'
+        generator = self.generator.get_generator()
+        des_stat = generator.generate(frame)
+
+        return hist, des_stat
 
 
 if __name__ == '__main__':

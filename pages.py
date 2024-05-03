@@ -14,39 +14,49 @@ class Storytelling(ttk.Frame):
         self.init_components()
 
     def handle_select_year(self, *args):
+        options = {'font': ('Georgia', 21)}
+        sticky = {'sticky': tk.NSEW}
+        color = {'fg': "Black", 'bg': 'white'}
+        pad = {'padx': 10, 'pady': 5}
+
         self.hist.destroy()
         year = int(self.year.get())
 
-        self.hist = self.controller.handle_select_year(self.frame, year)
-        self.hist.grid(row=0, column=0, sticky=tk.NSEW)
+        self.hist, self.des_stat = self.controller.handle_select_year(self.frame, year)
+        self.hist.grid(row=1, column=0, **sticky, **pad)
+        self.des_stat.grid(row=2, column=0, **sticky, **pad)
 
     def init_components(self):
         options = {'font': ('Georgia', 21)}
         sticky = {'sticky': tk.NSEW}
         color = {'fg': "Black", 'bg': 'white'}
+        pad = {'padx': 10, 'pady': 5}
 
-        #frame = ttk.Frame(self)
-
-        self.hist, self.graph1, self.des_stat = self.controller.initialise(self.frame)
-        self.hist.grid(row=0, column=0, **sticky)
-        self.graph1.grid(row=0, column=1, **sticky)
-        self.des_stat.grid(row=1, column=0, **sticky)
+        # init graph
+        self.hist, self.graph, self.des_stat = self.controller.initialise(self.frame)
+        self.hist.grid(row=1, column=0, **sticky, **pad)
+        self.graph.grid(row=0, column=1, rowspan=2, **sticky, **pad)
+        self.des_stat.grid(row=2, column=0, **sticky, **pad)
 
         # combobox
         year_arr = list(map(lambda x: str(x), range(1990, 2020)))
 
-        self.combobox = ttk.Combobox(self, textvariable=self.year, values=year_arr, state='readonly')
-        self.combobox.grid(row=2, column=0, columnspan=1, **sticky)
+        self.combobox = ttk.Combobox(self.frame, textvariable=self.year, values=year_arr, state='readonly')
+        self.combobox.grid(row=0, column=0, **sticky)
 
         self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
 
         self.year.set('Select Year')
+
+        # button
+        self.button = tk.Button(self)
 
         # frame
         self.frame.grid(row=0, column=0, **sticky)
 
         for i in range(3):
             self.frame.rowconfigure(i, weight=1)
+        for i in range(2):
             self.frame.columnconfigure(i, weight=1)
 
 
@@ -69,3 +79,7 @@ class DataExploration(ttk.Frame):
 
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
+
+
+if __name__ == '__main__':
+    import main
