@@ -137,7 +137,7 @@ class HistogramGenerator(GraphGenerator):
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
-        # plt.close(fig)
+        plt.close(fig)
         return canvas.get_tk_widget()
 
 
@@ -203,6 +203,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     @staticmethod
@@ -234,6 +235,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph2_rural(self, frame: ttk.Frame, size):
@@ -253,6 +255,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph2_urban(self, frame: ttk.Frame, size):
@@ -272,6 +275,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph3(self, frame: ttk.Frame, size):
@@ -294,6 +298,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph4(self, frame: ttk.Frame, size):
@@ -317,6 +322,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph5(self, frame: ttk.Frame, size):
@@ -342,6 +348,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
     def graph6(self, frame: ttk.Frame, size):
@@ -367,6 +374,7 @@ class DefaultGraph:
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        plt.close(fig)
         return canvas.get_tk_widget()
 
 
