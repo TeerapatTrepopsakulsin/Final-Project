@@ -19,6 +19,15 @@ class GraphUI(tk.Tk):
 
     def init_components(self):
         sticky = {'sticky': tk.NSEW}
+
+        # menubar
+        self.menu = tk.Menu(self)
+        self.config(menu=self.menu)
+
+        file_menu = tk.Menu(self.menu)
+        file_menu.add_command(label='Exit', command=self.destroy)
+        self.menu.add_cascade(label="File", menu=file_menu)
+
         # notebook
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, **sticky)
@@ -51,3 +60,7 @@ class GraphUI(tk.Tk):
     def run(self):
         """start the app, wait for events"""
         self.mainloop()
+
+
+if __name__ == '__main__':
+    import main
