@@ -15,7 +15,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 DF = pd.read_csv("data.csv")
 DF_OC = pd.read_csv("data_only_country.csv")
 
-
 class GraphGenerator(ABC):
     def __init__(self):
         self.__start_year = 1990
@@ -38,7 +37,7 @@ class GraphGenerator(ABC):
         elif self.graph == 'Stat':
             return StatGenerator(**attr)
 
-    def generate(self, frame: ttk.Frame):
+    def generate(self, frame: ttk.Frame, size):
         pass
 
     def set_all(self):
@@ -102,7 +101,7 @@ class LinegraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame):
+    def generate(self, frame: ttk.Frame, size):
         pass
 
 
@@ -112,7 +111,7 @@ class BargraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame):
+    def generate(self, frame: ttk.Frame, size):
         pass
 
 
@@ -122,21 +121,23 @@ class HistogramGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame):
+    def generate(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure()
+        fig = plt.figure(figsize=size)
 
         # histogram
-        g7_df = self.df_gen.generate(frame)
+        g7_df = self.df_gen.generate(frame, size)
         hist = g7_df['death_rate'].hist(bins=20)
         plt.title('Histogram for death rate')
         plt.xlabel('Death rate (deaths per 100,000 people)')
         plt.ylabel('Frequency')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.draw()
 
+        # plt.close(fig)
         return canvas.get_tk_widget()
 
 
@@ -146,13 +147,14 @@ class StatGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame):
-        df = self.df_gen.generate(frame)
+    def generate(self, frame: ttk.Frame, size) -> 'ttk.Treeview':
+        df = self.df_gen.generate(frame, size)
         stat_df = df[['death_total', 'death_rate']]
         stat_df = stat_df.rename(columns={'death_total': 'Total deaths', 'death_rate': 'Death rate'})
         des_stat = stat_df.describe()
         col = [''] + list(des_stat.columns)
         table = ttk.Treeview(frame, columns=col, show='headings')
+        table.configure(style='Treeview')
 
         for column in table["column"]:
             table.heading(column, text=column)
@@ -171,7 +173,7 @@ class DataframeGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
 
-    def generate(self, frame: tk.Frame):
+    def generate(self, frame: tk.Frame, size):
         df = self.og_df
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
@@ -183,9 +185,9 @@ class DefaultGraph:
     def __init__(self):
         pass
 
-    def graph1(self, frame: ttk.Frame):
+    def graph1(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure()
+        fig = plt.figure(figsize=size)
 
         # bar graph
         g1_df = DF_OC.groupby(['seatbelt_law'])['death_rate'].mean()
@@ -195,6 +197,7 @@ class DefaultGraph:
         g1_df.plot(kind='bar', stacked=False, xlabel='Existence of seat-belt law',
                    ylabel='Average death rate (deaths per 100,000 people)', color=colour, rot=0)
         plt.title('Average death rate of countries with and without seat-belt law')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -212,9 +215,9 @@ class DefaultGraph:
 
         return a, b, c
 
-    def graph2(self, frame: ttk.Frame):
+    def graph2(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure()
+        fig = plt.figure(figsize=size)
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -225,6 +228,7 @@ class DefaultGraph:
         plt.xlabel('Speed limit (km/h)')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.legend(['rural', 'urban'])
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -232,9 +236,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph2_rural(self, frame: ttk.Frame):
+    def graph2_rural(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure()
+        fig = plt.figure(figsize=size)
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -243,6 +247,7 @@ class DefaultGraph:
         plt.title('Correlation between death rate and speed limits in rural')
         plt.xlabel('Speed limit (km/h)')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -250,9 +255,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph2_urban(self, frame: ttk.Frame):
+    def graph2_urban(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure()
+        fig = plt.figure(figsize=size)
 
         # scatter chart
         rural, death_rate, urban = self.graph2_setup()
@@ -261,6 +266,7 @@ class DefaultGraph:
         plt.title('Correlation between death rate and speed limits in urban')
         plt.xlabel('Speed limit (km/h)')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -268,9 +274,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph3(self, frame: ttk.Frame):
+    def graph3(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=size)
 
         # pie chart
         g3_df = DF_OC.rename(columns={'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
@@ -278,10 +284,11 @@ class DefaultGraph:
 
         age_arr = ['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years']
         g3_df = g3_df.groupby(['Entity'])[age_arr].mean().mean()
-        g3_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%', figsize=(8, 6),
+        g3_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%',
                        textprops={'color': 'black'}, pctdistance=1.15, labels=None)
         plt.title('Deaths percents for different age ranges')
         plt.legend(['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years'], bbox_to_anchor=(1, 0.5))
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -289,9 +296,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph4(self, frame: ttk.Frame):
+    def graph4(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=size)
 
         # pie chart
         g4_df = DF_OC.rename(columns={'type_pedestrian': 'pedestrian', 'type_motorvehicle': 'motor vehicle',
@@ -300,10 +307,11 @@ class DefaultGraph:
 
         type_arr = ['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other']
         g4_df = g4_df.groupby(['Entity'])[type_arr].mean().mean()
-        g4_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%', figsize=(8, 6),
+        g4_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%',
                        textprops={'color': 'black'}, pctdistance=1.15, labels=None)
         plt.title('Deaths percents for different types')
         plt.legend(['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other'], bbox_to_anchor=(1, 0.5))
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -311,9 +319,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph5(self, frame: ttk.Frame):
+    def graph5(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=size)
 
         # bar graph
         g5_df = copy.deepcopy(DF_OC)
@@ -324,10 +332,11 @@ class DefaultGraph:
 
         age_arr = ['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years']
         g5_df = g5_df.groupby(['Entity'])[age_arr].mean().sum()
-        g5_df.plot.bar(figsize=(8, 6), rot=0)
+        g5_df.plot.bar(rot=0)
         plt.title('Average annual global death rate for each age range')
         plt.xlabel('Age')
         plt.ylabel('Death rate (deaths per 100,000 people)')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -335,9 +344,9 @@ class DefaultGraph:
 
         return canvas.get_tk_widget()
 
-    def graph6(self, frame: ttk.Frame):
+    def graph6(self, frame: ttk.Frame, size):
         # figure
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=size)
 
         # bar graph
         g6_df = copy.deepcopy(DF_OC)
@@ -348,10 +357,11 @@ class DefaultGraph:
 
         type_arr = ['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other']
         g6_df = g6_df.groupby(['Entity'])[type_arr].mean().sum()
-        g6_df.plot.bar(figsize=(8, 6), rot=0)
+        g6_df.plot.bar(rot=0)
         plt.title('Average annual global death rate for each type')
         plt.xlabel('Type')
         plt.ylabel('Death rate (deaths per 100,000 people)')
+        plt.tight_layout()
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
