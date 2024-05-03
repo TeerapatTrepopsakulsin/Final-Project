@@ -42,6 +42,22 @@ class Controller:
 
         return hist, des_stat
 
+    def handle_select_graph(self, frame: ttk.Frame, graph):
+        to_func = {'Speed limits/Death rate': lambda x: self.display.graph2(x),
+                   'Speed limits (Rural)/Death rate': lambda x: self.display.graph2_rural(x),
+                   'Speed limits (Urban)/Death rate': lambda x: self.display.graph2_urban(x),
+                   'Seat-belt law/Death rate': lambda x: self.display.graph1(x),
+                   'Ages (Pie chart)': lambda x: self.display.graph3(x),
+                   'Types (Pie chart)': lambda x: self.display.graph4(x),
+                   'Ages (Bar graph)': lambda x: self.display.graph5(x),
+                   'Types (Bar graph)': lambda x: self.display.graph6(x)
+                   }
+
+        func = to_func[graph]
+        graph = func(frame)
+
+        return graph
+
 
 if __name__ == '__main__':
     import main

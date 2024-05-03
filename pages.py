@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from controller import *
+from sub_component import *
 
 
 class Storytelling(ttk.Frame):
@@ -14,20 +15,29 @@ class Storytelling(ttk.Frame):
         self.init_components()
 
     def handle_select_year(self, *args):
-        options = {'font': ('Georgia', 21)}
         sticky = {'sticky': tk.NSEW}
-        color = {'fg': "Black", 'bg': 'white'}
         pad = {'padx': 10, 'pady': 5}
 
         self.hist.destroy()
+        self.des_stat.destroy()
         year = int(self.year.get())
 
         self.hist, self.des_stat = self.controller.handle_select_year(self.frame, year)
         self.hist.grid(row=1, column=0, **sticky, **pad)
         self.des_stat.grid(row=2, column=0, **sticky, **pad)
 
+    def handle_select_graph(self, event: tk.Event):
+        sticky = {'sticky': tk.NSEW}
+        pad = {'padx': 10, 'pady': 5}
+
+        self.graph.destroy()
+        graph = event.widget['text']
+
+        self.graph = self.controller.handle_select_graph(self.frame, graph)
+        self.graph.grid(row=0, column=1, rowspan=2, **sticky, **pad)
+
     def init_components(self):
-        options = {'font': ('Georgia', 21)}
+        options = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
         color = {'fg': "Black", 'bg': 'white'}
         pad = {'padx': 10, 'pady': 5}
@@ -48,8 +58,20 @@ class Storytelling(ttk.Frame):
 
         self.year.set('Select Year')
 
-        # button
-        self.button = tk.Button(self)
+        # keypad
+        graph_arr = ['Speed limits/Death rate',
+                     'Speed limits (Rural)/Death rate',
+                     'Speed limits (Urban)/Death rate',
+                     'Seat-belt law/Death rate',
+                     'Ages (Pie chart)',
+                     'Types (Pie chart)',
+                     'Ages (Bar graph)',
+                     'Types (Bar graph)']
+        self.keypad = Keypad(self.frame, keynames=graph_arr, columns=3)
+        self.keypad.configure(height=3, **options)
+        self.keypad.grid(row=2, column=1, **sticky)
+
+        self.keypad.bind('<Button>', self.handle_select_graph)
 
         # frame
         self.frame.grid(row=0, column=0, **sticky)
