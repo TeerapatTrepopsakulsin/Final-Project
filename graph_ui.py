@@ -11,7 +11,7 @@ class GraphUI(tk.Tk):
         super().__init__()
         self.title("Graph")
         self.controller = controller
-        #self.geometry('1280x720')
+        self.resizable(False, False)
         self.init_components()
 
     def handle_event(self, event: tk.Event):

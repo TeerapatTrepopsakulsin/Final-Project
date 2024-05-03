@@ -16,7 +16,7 @@ class Controller:
         self.generator.set_only_country()
 
         # generating
-        size = (4, 3)
+        size = (4, 4)
         self.generator.graph = 'Histogram'
         generator = self.generator.get_generator()
         hist = generator.generate(frame, size)
@@ -25,7 +25,7 @@ class Controller:
         generator = self.generator.get_generator()
         des_stat = generator.generate(frame, size)
 
-        size = (5, 3)
+        size = (5, 4)
         graph = self.display.graph2(frame, size)
 
         return hist, graph, des_stat
@@ -37,7 +37,7 @@ class Controller:
         self.generator.set_only_country()
 
         # generating
-        size = (4, 3)
+        size = (4, 4)
 
         self.generator.graph = 'Histogram'
         generator = self.generator.get_generator()
