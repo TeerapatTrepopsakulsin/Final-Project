@@ -13,15 +13,11 @@ class FilterBar(ttk.Frame):
         sticky = {'sticky': tk.NSEW}
         color = {'fg': "Black", 'bg': 'white'}
 
-        frame = ttk.Frame(self)
+        self.label = tk.Label(self, text='Filter Bar', **options, **color)
+        self.label.grid(row=0, column=0, **sticky)
 
-        self.label = tk.Label(frame, text='In progress...', **options, **color)
-        self.label.grid(row=1, column=1, **sticky)
-
-        frame.grid(row=0, column=0, **sticky)
-
-        frame.rowconfigure(1, weight=1)
-        frame.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
 
 class Keypad(ttk.Frame):
@@ -29,7 +25,6 @@ class Keypad(ttk.Frame):
     def __init__(self, parent, keynames=[], columns=1, **kwargs):
         super().__init__(parent, **kwargs)
         # keynames and columns
-        self.frame = parent
         self.keynames = keynames
         self.buttons = []
         self.init_components(columns)
@@ -46,21 +41,17 @@ class Keypad(ttk.Frame):
         pad = {'padx': 2, 'pady': 3}
         color = {'fg': "Black", 'bg': 'white'}
 
-        frame = ttk.Frame(self)
-
         for i in range(len(self.keynames)):
-            num_button = tk.Button(frame, text=self.keynames[i], **color, **options)
+            num_button = tk.Button(self, text=self.keynames[i], **color, **options)
             row = i // columns
             col = i % columns
             num_button.grid(row=row, column=col, **pad, **sticky)
             self.buttons.append(num_button)
 
-        frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-
         for i in range(len(self.keynames) // columns):
-            frame.rowconfigure(i, weight=1)
+            self.rowconfigure(i, weight=1)
         for i in range(columns):
-            frame.columnconfigure(i, weight=1)
+            self.columnconfigure(i, weight=1)
 
     def bind(self, sequence, func, add=''):
         """Bind an event handler to an event sequence."""
@@ -86,11 +77,7 @@ class Keypad(ttk.Frame):
         return self.buttons[0].config(key)[-1]
 
     def configure(self, cnf=None, **kwargs):
-        """Apply configuration settings to all buttons.
-
-        To configure properties of the frame that contains the buttons,
-        use `keypad.frame.configure()`.
-        """
+        """Apply configuration settings to all buttons."""
         for button in self.buttons:
             button.configure(cnf, **kwargs)
 

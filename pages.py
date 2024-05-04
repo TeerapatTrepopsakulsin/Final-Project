@@ -11,7 +11,6 @@ class Storytelling(ttk.Frame):
         self.parent = parent
         self.controller = controller
         self.year = tk.StringVar()
-        self.frame = ttk.Frame(self)
         self.init_components()
 
     def handle_select_year(self, event: tk.Event):
@@ -22,7 +21,7 @@ class Storytelling(ttk.Frame):
         self.des_stat.destroy()
         year = int(self.year.get())
 
-        self.hist, self.des_stat = self.controller.handle_select_year(self.frame, year)
+        self.hist, self.des_stat = self.controller.handle_select_year(self, year)
 
         # re-grid
         self.hist.grid(row=2, column=0, columnspan=2, **sticky, **pad)
@@ -35,7 +34,7 @@ class Storytelling(ttk.Frame):
         self.graph.destroy()
         graph = event.widget['text']
 
-        self.graph = self.controller.handle_select_graph(self.frame, graph)
+        self.graph = self.controller.handle_select_graph(self, graph)
 
         # re-grid
         self.graph.grid(row=0, column=2, rowspan=3, **sticky, **pad)
@@ -47,12 +46,12 @@ class Storytelling(ttk.Frame):
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
-        self.hist, self.graph, self.des_stat = self.controller.initialise_stt(self.frame)
+        self.hist, self.graph, self.des_stat = self.controller.initialise_stt(self)
 
         # combobox
         year_arr = list(map(lambda x: str(x), range(1990, 2020)))
 
-        self.combobox = ttk.Combobox(self.frame, textvariable=self.year, values=year_arr, state='readonly')
+        self.combobox = ttk.Combobox(self, textvariable=self.year, values=year_arr, state='readonly')
 
         self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
 
@@ -67,13 +66,13 @@ class Storytelling(ttk.Frame):
                      'Types (Pie chart)',
                      'Ages (Bar graph)',
                      'Types (Bar graph)']
-        self.keypad = Keypad(self.frame, keynames=graph_arr, columns=4)
+        self.keypad = Keypad(self, keynames=graph_arr, columns=4)
         self.keypad.configure(height=3, **options)
 
         self.keypad.bind('<Button>', self.handle_select_graph)
 
         # label
-        self.label = tk.Label(self.frame, text='Annual Death Statistic', anchor='w',  font=("Arial", 14, "bold"))
+        self.label = tk.Label(self, text='Annual Death Statistic', anchor='w',  font=("Arial", 14, "bold"))
 
         # grid
         self.hist.grid(row=2, column=0, columnspan=2, **sticky, **pad)
@@ -84,12 +83,10 @@ class Storytelling(ttk.Frame):
         self.label.grid(row=0, column=0, **sticky)
 
         # frame
-        self.frame.grid(row=0, column=0, **sticky)
-
         for i in range(4):
-            self.frame.rowconfigure(i, weight=1)
-        for i in range(5):
-            self.frame.columnconfigure(i, weight=1)
+            self.rowconfigure(i, weight=1)
+        for i in range(3):
+            self.columnconfigure(i, weight=1)
 
 
 class DataExploration(ttk.Frame):
@@ -98,7 +95,6 @@ class DataExploration(ttk.Frame):
         self.parent = parent
         self.controller = controller
         self.year = tk.StringVar()
-        self.frame = ttk.Frame(self)
         self.init_components()
 
     def handle_generate(self):
@@ -111,10 +107,10 @@ class DataExploration(ttk.Frame):
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
-        self.graph = self.controller.initialise_dte(self.frame)
+        self.graph = self.controller.initialise_dte(self)
 
         # filter bar
-        self.filter_bar = FilterBar(self.frame)
+        self.filter_bar = FilterBar(self)
 
         self.filter_bar.bind('<Button>', self.handle_generate)
 
@@ -124,12 +120,10 @@ class DataExploration(ttk.Frame):
 
 
         # frame
-        self.frame.grid(row=0, column=0, **sticky)
-
         for i in range(1):
-            self.frame.rowconfigure(i, weight=1)
+            self.rowconfigure(i, weight=1)
         for i in range(2):
-            self.frame.columnconfigure(i, weight=1)
+            self.columnconfigure(i, weight=1)
 
 
 if __name__ == '__main__':
