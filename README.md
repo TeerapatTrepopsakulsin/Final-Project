@@ -1,8 +1,8 @@
 # Road incident deaths
 
 ## Description
-The application displays global road incident death statistics and death rates as information
-Permanently for a page. There will be another few pages that users can visualise and interact with graphs for information (age, type, year, etc.) which will be displayed on the screen differently according to the selected value/hue.
+The application displays global road incident death statistics as information
+permanently for a first page (Storytelling). There will be another page (Data Exploration) that users can visualise and interact with graphs for information (age, type, year, etc.) which will be displayed on the screen differently according to the selected value/hue.
 
 ## Installing the Application
 See [How to Install](https://github.com/TeerapatTrepopsakulsin/Year1-Project/wiki/How-to-Install) in the project wiki.
