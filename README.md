@@ -4,7 +4,7 @@
 
 ### How To Run (Terminal or Command prompt)
 1. Clone this repository
-   + git clone https://github.com/your-project-repo *yourdirectory*
+   + git clone https://github.com/TeerapatTrepopsakulsin/Year1-Project.git *yourdirectory*
    + cd *yourdirectory*
 2. Setup Virtual Environment
    + python -m venv env
