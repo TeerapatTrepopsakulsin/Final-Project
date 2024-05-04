@@ -62,6 +62,10 @@ class GraphGenerator(ABC):
 
     @start_year.setter
     def start_year(self, year):
+        if not isinstance(year, int):
+            raise TypeError('Year should be integer.')
+        if year < 1990 or year > 2019:
+            raise ValueError('Year should be between 1990 to 2019.')
         self.__start_year = year
 
     @property
@@ -70,6 +74,10 @@ class GraphGenerator(ABC):
 
     @end_year.setter
     def end_year(self, year):
+        if not isinstance(year, int):
+            raise TypeError('Year should be an integer.')
+        if year < 1990 or year > 2019:
+            raise ValueError('Year should be between 1990 to 2019.')
         self.__end_year = year
 
     @property
@@ -78,6 +86,9 @@ class GraphGenerator(ABC):
 
     @graph.setter
     def graph(self, graph):
+        available = ("Histogram", "Line Graph", "Bar graph", "Stat")
+        if graph not in available:
+            raise ValueError('Available graph types are: "Histogram", "Line Graph", "Bar graph", "Stat"')
         self.__graph = graph
 
     @property
@@ -102,6 +113,9 @@ class GraphGenerator(ABC):
 
     @unit.setter
     def unit(self, unit):
+        available = ("death_rate", "death_total")
+        if unit not in available:
+            raise ValueError('Available units are: "death_rate", "death_total"')
         self.__unit = unit
 
     @property
@@ -110,6 +124,8 @@ class GraphGenerator(ABC):
 
     @array.setter
     def array(self, arr):
+        if not arr:
+            raise ValueError('Array cannot be empty.')
         self.__array = arr
 
     @property
@@ -118,6 +134,9 @@ class GraphGenerator(ABC):
 
     @mode.setter
     def mode(self, mode):
+        available = ("standard", "top")
+        if mode not in available:
+            raise ValueError('Available modes are: "standard", "top"')
         self.__mode = mode
 
     @property
