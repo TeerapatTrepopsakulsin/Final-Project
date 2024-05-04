@@ -23,8 +23,8 @@ class GraphGenerator(ABC):
         self.__entity1 = 'World'
         self.__entity2 = 'Thailand'
         self.__unit = 'death_total'
-        self.__array = [self.unit]
-        self.__mode = 'Standard'
+        self.__array = ['death_total']
+        self.__mode = 'standard'
         self.__graph = 'Histogram'
         self.__og_df = DF_OC
 
@@ -113,6 +113,14 @@ class GraphGenerator(ABC):
         self.__array = arr
 
     @property
+    def mode(self):
+        return self.__mode
+
+    @mode.setter
+    def mode(self, mode):
+        self.__mode = mode
+
+    @property
     def og_df(self):
         return self.__og_df
 
@@ -155,9 +163,13 @@ class HistogramGenerator(GraphGenerator):
 
         # histogram
         g7_df = self.df_gen.generate(frame, size)
-        hist = g7_df[self.unit].hist(bins=20)
-        plt.title('Histogram for death rate')
-        plt.xlabel('Death rate (deaths per 100,000 people)')
+        hist = g7_df[self.array].sum(axis=1).hist(bins=20)
+        to_label = {
+            'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
+            'death_total': ('total deaths', 'Total deaths (people)')
+        }
+        plt.title(f'Histogram for {to_label[self.unit][0]}')
+        plt.xlabel(f'{to_label[self.unit][1]}')
         plt.ylabel('Frequency (Countries)')
         plt.tight_layout()
 

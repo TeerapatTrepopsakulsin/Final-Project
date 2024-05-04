@@ -14,6 +14,8 @@ class Controller:
         self.generator.start_year = 2019
         self.generator.end_year = 2019
         self.generator.unit = 'death_rate'
+        self.generator.array = ['death_rate']
+        self.generator.mode = 'standard'
         self.generator.set_only_country()
 
         # generating
@@ -35,6 +37,8 @@ class Controller:
         # initialise the generator
         self.generator.start_year = year
         self.generator.end_year = year
+        self.generator.unit = 'death_rate'
+        self.generator.array = ['death_rate']
         self.generator.set_only_country()
 
         # generating
@@ -73,6 +77,8 @@ class Controller:
 
     def handle_generate(self):
         # TODO
+        # if len(self.generator.array) >= 5:
+        #     self.generator.array = [self.generator.unit]
         pass
 
 
