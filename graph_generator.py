@@ -15,13 +15,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 DF = pd.read_csv("data.csv")
 DF_OC = pd.read_csv("data_only_country.csv")
 
+
 class GraphGenerator(ABC):
     def __init__(self):
         self.__start_year = 1990
         self.__end_year = 2019
-        self.__entity = 'World'
-        self.__type_or_age = 'age'
+        self.__entity1 = 'World'
+        self.__entity2 = 'Thailand'
         self.__unit = 'death_total'
+        self.__array = [self.unit]
         self.__mode = 'Standard'
         self.__graph = 'Histogram'
         self.__og_df = DF_OC
@@ -37,7 +39,15 @@ class GraphGenerator(ABC):
         elif self.graph == 'Stat':
             return StatGenerator(**attr)
 
-    def generate(self, frame: ttk.Frame, size):
+    def generate(self, frame: ttk.Frame, size, mode=None):
+        """
+        Generate the visualisation.
+
+        :param frame: ttk.Frame
+        :param size: tuple with length of 2. For example, (4, 3)
+        :param mode: None, "entity", "top5"
+        :return:
+        """
         pass
 
     def set_all(self):
@@ -71,12 +81,20 @@ class GraphGenerator(ABC):
         self.__graph = graph
 
     @property
-    def entity(self):
-        return self.__entity
+    def entity1(self):
+        return self.__entity1
 
-    @entity.setter
-    def entity(self, entity):
-        self.__entity = entity
+    @entity1.setter
+    def entity1(self, entity):
+        self.__entity1 = entity
+
+    @property
+    def entity2(self):
+        return self.__entity2
+
+    @entity2.setter
+    def entity2(self, entity):
+        self.__entity2 = entity
 
     @property
     def unit(self):
@@ -85,6 +103,14 @@ class GraphGenerator(ABC):
     @unit.setter
     def unit(self, unit):
         self.__unit = unit
+
+    @property
+    def array(self):
+        return self.__array
+
+    @array.setter
+    def array(self, arr):
+        self.__array = arr
 
     @property
     def og_df(self):
@@ -101,7 +127,8 @@ class LinegraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size):
+    def generate(self, frame: ttk.Frame, size, mode=None):
+        # TODO
         pass
 
 
@@ -111,7 +138,8 @@ class BargraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size):
+    def generate(self, frame: ttk.Frame, size, mode=None):
+        # TODO
         pass
 
 
@@ -121,13 +149,13 @@ class HistogramGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size):
+    def generate(self, frame: ttk.Frame, size, mode=None):
         # figure
         fig = plt.figure(figsize=size)
 
         # histogram
         g7_df = self.df_gen.generate(frame, size)
-        hist = g7_df['death_rate'].hist(bins=20)
+        hist = g7_df[self.unit].hist(bins=20)
         plt.title('Histogram for death rate')
         plt.xlabel('Death rate (deaths per 100,000 people)')
         plt.ylabel('Frequency (Countries)')
@@ -147,7 +175,7 @@ class StatGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size) -> 'ttk.Treeview':
+    def generate(self, frame: ttk.Frame, size, mode=None) -> 'ttk.Treeview':
         df = self.df_gen.generate(frame, size)
         stat_df = df[['death_total', 'death_rate']]
         stat_df = stat_df.rename(columns={'death_total': 'Total deaths', 'death_rate': 'Death rate'})
@@ -177,10 +205,31 @@ class DataframeGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
 
-    def generate(self, frame: tk.Frame, size):
+    def generate(self, frame: ttk.Frame, size, mode=None):
         df = self.og_df
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
+
+        if mode == 'entity':
+            new_df = new_df[(new_df['Entity'] == self.entity1 or new_df['Entity'] == self.entity1)]
+        elif mode == 'top5':
+            # TODO
+            pass
+
+        gen_df = self.initialise(new_df)
+
+        return gen_df
+
+    def initialise(self, df):
+        if self.unit == 'death_total':
+            return df
+
+        new_df = copy.deepcopy(df)
+        df_col = ['age_0_4', 'age_5_14', 'age_15_49', 'age_50_69', 'age_70',
+                  'type_pedestrian', 'type_motorvehicle', 'type_motorcyclist',
+                  'type_cyclist', 'type_other']
+        for col in df_col:
+            new_df[col] = new_df[col] / new_df['population'] * 1e5
 
         return new_df
 

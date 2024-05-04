@@ -98,6 +98,7 @@ class DataExploration(ttk.Frame):
         self.init_components()
 
     def handle_generate(self):
+        # TODO
         pass
 
     def init_components(self):
@@ -117,7 +118,6 @@ class DataExploration(ttk.Frame):
         # grid
         self.graph.grid(row=0, column=0, **sticky, **pad)
         self.filter_bar.grid(row=0, column=1, **sticky, **pad)
-
 
         # frame
         for i in range(1):

@@ -13,6 +13,7 @@ class Controller:
         # initialise the generator
         self.generator.start_year = 2019
         self.generator.end_year = 2019
+        self.generator.unit = 'death_rate'
         self.generator.set_only_country()
 
         # generating
@@ -67,7 +68,12 @@ class Controller:
         return graph
 
     def initialise_dte(self, frame: ttk.Frame):
+        # TODO
         return tk.Canvas(frame, background='black')
+
+    def handle_generate(self):
+        # TODO
+        pass
 
 
 if __name__ == '__main__':
