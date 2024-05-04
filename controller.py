@@ -9,7 +9,7 @@ class Controller:
         self.display = DefaultGraph()
         self.generator = graph_generator
 
-    def initialise(self, frame: ttk.Frame):
+    def initialise_stt(self, frame: ttk.Frame):
         # initialise the generator
         self.generator.start_year = 2019
         self.generator.end_year = 2019
@@ -65,6 +65,9 @@ class Controller:
         graph = func(frame, size)
 
         return graph
+
+    def initialise_dte(self, frame: ttk.Frame):
+        return tk.Canvas(frame, background='black')
 
 
 if __name__ == '__main__':

@@ -1,9 +1,8 @@
 """Pages module"""
 import tkinter as tk
 from tkinter import ttk
-from controller import *
-from sub_component import *
-import time
+from controller import Controller
+from sub_component import Keypad, FilterBar
 
 
 class Storytelling(ttk.Frame):
@@ -48,7 +47,7 @@ class Storytelling(ttk.Frame):
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
-        self.hist, self.graph, self.des_stat = self.controller.initialise(self.frame)
+        self.hist, self.graph, self.des_stat = self.controller.initialise_stt(self.frame)
 
         # combobox
         year_arr = list(map(lambda x: str(x), range(1990, 2020)))
@@ -89,29 +88,48 @@ class Storytelling(ttk.Frame):
 
         for i in range(4):
             self.frame.rowconfigure(i, weight=1)
-        for i in range(4):
+        for i in range(5):
             self.frame.columnconfigure(i, weight=1)
 
 
 class DataExploration(ttk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
+        self.parent = parent
+        self.controller = controller
+        self.year = tk.StringVar()
+        self.frame = ttk.Frame(self)
         self.init_components()
 
+    def handle_generate(self):
+        pass
+
     def init_components(self):
-        options = {'font': ('Georgia', 21)}
+        options = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
         color = {'fg': "Black", 'bg': 'white'}
+        pad = {'padx': 10, 'pady': 5}
 
-        frame = ttk.Frame(self)
+        # init graph
+        self.graph = self.controller.initialise_dte(self.frame)
 
-        self.label = tk.Label(frame, text='In progress...', **options, **color)
-        self.label.grid(row=1, column=1, **sticky)
+        # filter bar
+        self.filter_bar = FilterBar(self.frame)
 
-        frame.grid(row=0, column=0, **sticky)
+        self.filter_bar.bind('<Button>', self.handle_generate)
 
-        frame.rowconfigure(1, weight=1)
-        frame.columnconfigure(1, weight=1)
+        # grid
+        self.graph.grid(row=0, column=0, **sticky, **pad)
+        self.filter_bar.grid(row=0, column=1, **sticky, **pad)
+
+
+        # frame
+        self.frame.grid(row=0, column=0, **sticky)
+
+        for i in range(1):
+            self.frame.rowconfigure(i, weight=1)
+        for i in range(2):
+            self.frame.columnconfigure(i, weight=1)
 
 
 if __name__ == '__main__':

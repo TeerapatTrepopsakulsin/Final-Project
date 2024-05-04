@@ -3,6 +3,27 @@ import tkinter as tk
 from tkinter import ttk
 
 
+class FilterBar(ttk.Frame):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.init_components()
+
+    def init_components(self):
+        options = {'font': ('Georgia', 21)}
+        sticky = {'sticky': tk.NSEW}
+        color = {'fg': "Black", 'bg': 'white'}
+
+        frame = ttk.Frame(self)
+
+        self.label = tk.Label(frame, text='In progress...', **options, **color)
+        self.label.grid(row=1, column=1, **sticky)
+
+        frame.grid(row=0, column=0, **sticky)
+
+        frame.rowconfigure(1, weight=1)
+        frame.columnconfigure(1, weight=1)
+
+
 class Keypad(ttk.Frame):
     """Keypad class which inherit from tkinter Frame"""
     def __init__(self, parent, keynames=[], columns=1, **kwargs):

@@ -1,17 +1,15 @@
-import graph_generator
 from pages import *
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk
 from winsound import MessageBeep, SND_NOWAIT
-from controller import *
+from controller import Controller
 
 
 class GraphUI(tk.Tk):
     def __init__(self, controller: Controller):
         super().__init__()
-        self.title("Graph")
+        self.title("Road incident deaths")
         self.controller = controller
-        self.resizable(False, False)
         self.init_components()
 
     def handle_event(self, event: tk.Event):
@@ -34,7 +32,7 @@ class GraphUI(tk.Tk):
 
         ## create frames
         frame1 = Storytelling(self.notebook, self.controller)
-        frame2 = DataExploration(self.notebook)
+        frame2 = DataExploration(self.notebook, self.controller)
 
         frame1.grid(row=0, column=0, **sticky)
         frame2.grid(row=0, column=0, **sticky)
@@ -42,14 +40,6 @@ class GraphUI(tk.Tk):
         ## add frames to notebook
         self.notebook.add(frame1, text='Storytelling')
         self.notebook.add(frame2, text='Data Exploration')
-
-        # graph_left
-        # label_stat
-        # graph_right
-        # selection
-
-        # graph
-        # filter_table
 
         # fill the window
         for row in range(1):
