@@ -83,7 +83,7 @@ class Storytelling(ttk.Frame):
         self.label.grid(row=0, column=0, **sticky)
 
         # frame
-        for i in range(4):
+        for i in range(2, 3):
             self.rowconfigure(i, weight=1)
         for i in range(3):
             self.columnconfigure(i, weight=1)

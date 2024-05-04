@@ -130,7 +130,7 @@ class HistogramGenerator(GraphGenerator):
         hist = g7_df['death_rate'].hist(bins=20)
         plt.title('Histogram for death rate')
         plt.xlabel('Death rate (deaths per 100,000 people)')
-        plt.ylabel('Frequency')
+        plt.ylabel('Frequency (Countries)')
         plt.tight_layout()
 
         # Tkinter canvas that contain the figure
@@ -155,6 +155,10 @@ class StatGenerator(GraphGenerator):
         col = [''] + list(des_stat.columns)
         table = ttk.Treeview(frame, columns=col, show='headings')
         table.configure(style='Treeview')
+
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=(None, 12, 'bold'))
+        style.configure("Treeview", font=(None, 11))
 
         for column in table["column"]:
             table.heading(column, text=column)
