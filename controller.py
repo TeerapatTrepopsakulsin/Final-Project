@@ -11,20 +11,16 @@ class Controller:
 
     def initialise_stt(self, frame: ttk.Frame):
         # initialise the generator
-        self.generator.start_year = 2019
-        self.generator.end_year = 2019
-        self.generator.unit = 'death_rate'
-        self.generator.array = ['death_rate']
-        self.generator.mode = 'standard'
+        self.generator.setup(start_year=2019, end_year=2019, unit='death_rate', array=['death_rate'], mode='standard')
         self.generator.set_only_country()
 
         # generating
         size = (4, 4)
-        self.generator.graph = 'Histogram'
+        self.generator.setup(graph='Histogram')
         generator = self.generator.get_generator()
         hist = generator.generate(frame, size)
 
-        self.generator.graph = 'Stat'
+        self.generator.setup(graph='Stat')
         generator = self.generator.get_generator()
         des_stat = generator.generate(frame, size)
 
@@ -35,20 +31,17 @@ class Controller:
 
     def handle_select_year(self, frame: ttk.Frame, year):
         # initialise the generator
-        self.generator.start_year = year
-        self.generator.end_year = year
-        self.generator.unit = 'death_rate'
-        self.generator.array = ['death_rate']
+        self.generator.setup(start_year=year, end_year=year, unit='death_rate', array=['death_rate'], mode='standard')
         self.generator.set_only_country()
 
         # generating
         size = (4, 4)
 
-        self.generator.graph = 'Histogram'
+        self.generator.setup(graph='Histogram')
         generator = self.generator.get_generator()
         hist = generator.generate(frame, size)
 
-        self.generator.graph = 'Stat'
+        self.generator.setup(graph='Stat')
         generator = self.generator.get_generator()
         des_stat = generator.generate(frame, size)
 

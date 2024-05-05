@@ -39,16 +39,22 @@ class GraphGenerator(ABC):
         elif self.graph == 'Stat':
             return StatGenerator(**attr)
 
-    def generate(self, frame: ttk.Frame, size, mode=None):
+    def generate(self, frame: ttk.Frame, size, process=None):
         """
         Generate the visualisation.
 
         :param frame: ttk.Frame
         :param size: tuple with length of 2. For example, (4, 3)
-        :param mode: None, "entity", "top5"
+        :param process: None, "entity", "top5"
         :return:
         """
         pass
+
+    def setup(self, **kwargs):
+        for item in kwargs:
+            if '_GraphGenerator__'+item not in self.__dict__:
+                raise ValueError(f'unknown option "-{item}"')
+            self.__dict__.update({'_GraphGenerator__'+item: kwargs[item]})
 
     def set_all(self):
         self.og_df = DF
@@ -154,7 +160,7 @@ class LinegraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, mode=None):
+    def generate(self, frame: ttk.Frame, size, process=None):
         # TODO
         pass
 
@@ -165,7 +171,7 @@ class BargraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, mode=None):
+    def generate(self, frame: ttk.Frame, size, process=None):
         # TODO
         pass
 
@@ -176,12 +182,12 @@ class HistogramGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, mode=None):
+    def generate(self, frame: ttk.Frame, size, process=None):
         # figure
         fig = plt.figure(figsize=size)
 
         # histogram
-        g7_df = self.df_gen.generate(frame, size)
+        g7_df = self.df_gen.generate(frame, size)   # histogram can generate only 1 mode anyway
         hist = g7_df[self.array].sum(axis=1).hist(bins=20)
         to_label = {
             'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
@@ -206,8 +212,8 @@ class StatGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, mode=None) -> 'ttk.Treeview':
-        df = self.df_gen.generate(frame, size)
+    def generate(self, frame: ttk.Frame, size, process=None) -> 'ttk.Treeview':
+        df = self.df_gen.generate(frame, size)  # stat can generate only 1 mode anyway
         stat_df = df[['death_total', 'death_rate']]
         stat_df = stat_df.rename(columns={'death_total': 'Total deaths', 'death_rate': 'Death rate'})
         des_stat = stat_df.describe()
@@ -236,14 +242,14 @@ class DataframeGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
 
-    def generate(self, frame: ttk.Frame, size, mode=None):
+    def generate(self, frame: ttk.Frame, size, process=None):
         df = self.og_df
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
 
-        if mode == 'entity':
+        if process == 'entity':
             new_df = new_df[(new_df['Entity'] == self.entity1 or new_df['Entity'] == self.entity1)]
-        elif mode == 'top5':
+        elif process == 'top5':
             # TODO
             pass
 
