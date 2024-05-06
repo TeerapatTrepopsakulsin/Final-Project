@@ -160,9 +160,45 @@ class LinegraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, process="normal"):
+    def generate(self, frame: ttk.Frame, size, process="entity"):
+        if process == "normal":
+            raise ValueError('histogram generating process cannot be "normal".')
+
+        # figure
+        fig, ax = plt.subplots(figsize=size)
+
+        # histogram
+        l_df = self.df_gen.generate(frame, size, process)
+        entity1_df = l_df[l_df['Entity'] == self.entity1]
+        entity2_df = l_df[l_df['Entity'] == self.entity2]
+
+        yval1 = entity1_df[self.array].sum(axis=1)
+        yval2 = entity2_df[self.array].sum(axis=1)
+
+        ax.plot(entity1_df['Year'], yval1)
+        ax.plot(entity2_df['Year'], yval2)
+
+        width = (self.end_year - self.start_year) // 12 + 1
+        ax.set_xticks(range(self.start_year, self.end_year + 1, width))
+        ax.grid()
+        ax.tick_params(axis='x', grid_linewidth=0.3)
+
+        to_label = {
+            'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
+            'death_total': ('total deaths', 'Total deaths (people)')
+        }
+        ax.set_ylabel(f'{to_label[self.unit][1]}')
+        ax.set_xlabel('Year')
+        ax.set_title(f'Line graph of {to_label[self.unit][0]} from road incidents')
+        ax.legend([self.entity1, self.entity2])
+
+        # Tkinter canvas that contain the figure
+        canvas = FigureCanvasTkAgg(fig, master=frame)
+        canvas.draw()
+
+        plt.close(fig)
+        return canvas.get_tk_widget()
         # TODO
-        pass
 
     def __del__(self):
         pass
@@ -195,13 +231,13 @@ class HistogramGenerator(GraphGenerator):
         fig = plt.figure(figsize=size)
 
         # histogram
-        g7_df = self.df_gen.generate(frame, size, process)  # histogram can generate only 1 mode anyway
-        hist = g7_df[self.array].sum(axis=1).hist(bins=20)
+        h_df = self.df_gen.generate(frame, size, process)  # histogram can generate only 1 mode anyway
+        hist = h_df[self.array].sum(axis=1).hist(bins=20)
         to_label = {
             'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
             'death_total': ('total deaths', 'Total deaths (people)')
         }
-        plt.title(f'Histogram for {to_label[self.unit][0]}')
+        plt.title(f'Histogram for {to_label[self.unit][0]} from road incidents')
         plt.xlabel(f'{to_label[self.unit][1]}')
         plt.ylabel('Frequency (Countries)')
         plt.tight_layout()

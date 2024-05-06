@@ -57,8 +57,19 @@ class Controller:
         return _graph
 
     def initialise_dte(self, frame: ttk.Frame):
+        # initialise the generator
+        self.generator.setup(start_year=1990, end_year=2019, entity1='World', entity2='Thailand',
+                             unit='death_rate', array=['death_rate'], mode='standard')
+        self.generator.set_all()
+
+        size = (8, 5)
+        self.generator.graph = 'Line Graph'
+        generator = self.generator.get_generator()
+        line = generator.generate(frame, size)
+
         # TODO
-        return tk.Canvas(frame, background='black')
+
+        return line
 
     def handle_generate(self):
         # TODO
