@@ -46,7 +46,7 @@ class Storytelling(ttk.Frame):
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
-        self.hist, self.graph, self.des_stat = self.controller.initialise_stt(self)
+        self.hist, self.graph, self.des_stat, graph_arr = self.controller.initialise_stt(self)
 
         # combobox
         year_arr = list(map(lambda x: str(x), range(1990, 2020)))
@@ -58,14 +58,6 @@ class Storytelling(ttk.Frame):
         self.year.set('Select Year')
 
         # keypad
-        graph_arr = ['Speed limits/Death rate',
-                     'Speed limits (Rural)/Death rate',
-                     'Speed limits (Urban)/Death rate',
-                     'Seat-belt law/Death rate',
-                     'Ages (Pie chart)',
-                     'Types (Pie chart)',
-                     'Ages (Bar graph)',
-                     'Types (Bar graph)']
         self.keypad = Keypad(self, keynames=graph_arr, columns=4)
         self.keypad.configure(height=3, **options)
 

@@ -1,12 +1,12 @@
 """Controller module."""
 import tkinter as tk
 from tkinter import ttk
-from graph_generator import GraphGenerator, DefaultGraph
+from graph_generator import GraphGenerator, DefaultGraphCatalog
 
 
 class Controller:
-    def __init__(self, graph_generator: GraphGenerator):
-        self.display = DefaultGraph()
+    def __init__(self, graph_generator: GraphGenerator, default_graph: type[DefaultGraphCatalog]):
+        self.catalog = default_graph
         self.generator = graph_generator
 
     def initialise_stt(self, frame: ttk.Frame):
@@ -25,9 +25,11 @@ class Controller:
         des_stat = generator.generate(frame, size)
 
         size = (5, 4)
-        graph = self.display.graph2(frame, size)
+        graph = self.catalog.get_func('Speed limits/Death rate')(frame, size)
 
-        return hist, graph, des_stat
+        default_graph_list = [i.value['label'] for i in DefaultGraphCatalog]
+
+        return hist, graph, des_stat, default_graph_list
 
     def handle_select_year(self, frame: ttk.Frame, year):
         # initialise the generator
@@ -48,21 +50,11 @@ class Controller:
         return hist, des_stat
 
     def handle_select_graph(self, frame: ttk.Frame, graph):
-        to_func = {'Speed limits/Death rate': self.display.graph2,
-                   'Speed limits (Rural)/Death rate': self.display.graph2_rural,
-                   'Speed limits (Urban)/Death rate': self.display.graph2_urban,
-                   'Seat-belt law/Death rate': self.display.graph1,
-                   'Ages (Pie chart)': self.display.graph3,
-                   'Types (Pie chart)': self.display.graph4,
-                   'Ages (Bar graph)': self.display.graph5,
-                   'Types (Bar graph)': self.display.graph6
-                   }
-
-        func = to_func[graph]
+        func = self.catalog.get_func(graph)
         size = (5, 3)
-        graph = func(frame, size)
+        _graph = func(frame, size)
 
-        return graph
+        return _graph
 
     def initialise_dte(self, frame: ttk.Frame):
         # TODO

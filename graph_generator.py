@@ -52,9 +52,9 @@ class GraphGenerator(ABC):
 
     def setup(self, **kwargs):
         for item in kwargs:
-            if '_GraphGenerator__'+item not in self.__dict__:
+            if '_GraphGenerator__' + item not in self.__dict__:
                 raise ValueError(f'unknown option "-{item}"')
-            self.__dict__.update({'_GraphGenerator__'+item: kwargs[item]})
+            self.__dict__.update({'_GraphGenerator__' + item: kwargs[item]})
 
     def set_all(self):
         self.og_df = DF
@@ -187,7 +187,7 @@ class HistogramGenerator(GraphGenerator):
         fig = plt.figure(figsize=size)
 
         # histogram
-        g7_df = self.df_gen.generate(frame, size)   # histogram can generate only 1 mode anyway
+        g7_df = self.df_gen.generate(frame, size)  # histogram can generate only 1 mode anyway
         hist = g7_df[self.array].sum(axis=1).hist(bins=20)
         to_label = {
             'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
@@ -467,19 +467,40 @@ class DefaultGraph:
         plt.close(fig)
         return canvas.get_tk_widget()
 
+    def graph7(self):
+        # TODO
+        # Linegraph death rate/year (speed limit range as hue)
+        pass
 
-# class DefaultGraphCatalog(Enum):
-#     SPD_DRAT = ['Speed limits/Death rate', DefaultGraph().graph2]
-#
-#     @property
-#     def detail(self):
-#         return self.value
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-# if __name__ == '__main__':
-#     for i in DefaultGraphCatalog:
-#         print(i.detail)
-#     print(DefaultGraphCatalog['SPD_DRAT'].detail)
+
+class DefaultGraphCatalog(Enum):
+
+    SPD_DRAT = {'label': 'Speed limits/Death rate', 'func': DefaultGraph().graph2}
+    SPD_RR_DRAT = {'label': 'Speed limits (Rural)/Death rate', 'func': DefaultGraph().graph2_rural}
+    SPD_UB_DRAT = {'label': 'Speed limits (Urban)/Death rate', 'func': DefaultGraph().graph2_urban}
+    SBL_DRAT = {'label': 'Seat-belt law/Death rate', 'func': DefaultGraph().graph1}
+    AGE_PIE = {'label': 'Ages (Pie chart)', 'func': DefaultGraph().graph3}
+    TYPE_PIE = {'label': 'Types (Pie chart)', 'func': DefaultGraph().graph4}
+    AGE_BAR = {'label': 'Ages (Bar graph)', 'func': DefaultGraph().graph5}
+    TYPE_BAR = {'label': 'Types (Bar graph)', 'func': DefaultGraph().graph6}
+
+    @property
+    def detail(self):
+        return self.value
+
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def get_func(label):
+        for item in DefaultGraphCatalog:
+            if item.value['label'] == label:
+                return item.value['func']
+
+
+# TODO # treeview of dataset
+
+
+if __name__ == '__main__':
+    a = DefaultGraphCatalog.get_func('Speed limits/Death rate')
+    print(a)
