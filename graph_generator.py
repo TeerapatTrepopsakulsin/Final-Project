@@ -243,12 +243,12 @@ class DataframeGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
 
     def generate(self, frame: ttk.Frame, size, process=None):
-        df = self.og_df
+        df = copy.deepcopy(self.og_df)
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
 
         if process == 'entity':
-            new_df = new_df[(new_df['Entity'] == self.entity1 or new_df['Entity'] == self.entity1)]
+            new_df = new_df[(new_df['Entity'] == self.entity1) | (new_df['Entity'] == self.entity2)]
         elif process == 'top5':
             # TODO
             pass
@@ -468,5 +468,18 @@ class DefaultGraph:
         return canvas.get_tk_widget()
 
 
-if __name__ == '__main__':
-    import main
+# class DefaultGraphCatalog(Enum):
+#     SPD_DRAT = ['Speed limits/Death rate', DefaultGraph().graph2]
+#
+#     @property
+#     def detail(self):
+#         return self.value
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# if __name__ == '__main__':
+#     for i in DefaultGraphCatalog:
+#         print(i.detail)
+#     print(DefaultGraphCatalog['SPD_DRAT'].detail)

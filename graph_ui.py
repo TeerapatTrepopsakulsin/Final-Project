@@ -22,7 +22,7 @@ class GraphUI(tk.Tk):
         self.menu = tk.Menu(self)
         self.config(menu=self.menu)
 
-        file_menu = tk.Menu(self.menu)
+        file_menu = tk.Menu(self.menu, tearoff=False)
         file_menu.add_command(label='Exit', command=self.destroy)
         self.menu.add_cascade(label="File", menu=file_menu)
 
