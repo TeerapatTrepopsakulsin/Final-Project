@@ -39,13 +39,13 @@ class GraphGenerator(ABC):
         elif self.graph == 'Stat':
             return StatGenerator(**attr)
 
-    def generate(self, frame: ttk.Frame, size, process=None):
+    def generate(self, frame: ttk.Frame, size, process="normal"):
         """
         Generate the visualisation.
 
         :param frame: ttk.Frame
         :param size: tuple with length of 2. For example, (4, 3)
-        :param process: None, "entity", "top5"
+        :param process: str: "normal" or "entity" or "top5"
         :return:
         """
         pass
@@ -160,8 +160,11 @@ class LinegraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, process=None):
+    def generate(self, frame: ttk.Frame, size, process="normal"):
         # TODO
+        pass
+
+    def __del__(self):
         pass
 
 
@@ -171,8 +174,11 @@ class BargraphGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, process=None):
+    def generate(self, frame: ttk.Frame, size, process="normal"):
         # TODO
+        pass
+
+    def __del__(self):
         pass
 
 
@@ -182,12 +188,14 @@ class HistogramGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, process=None):
+    def generate(self, frame: ttk.Frame, size, process="normal"):
+        if process != "normal":
+            raise ValueError('histogram generating process can only be "normal".')
         # figure
         fig = plt.figure(figsize=size)
 
         # histogram
-        g7_df = self.df_gen.generate(frame, size)  # histogram can generate only 1 mode anyway
+        g7_df = self.df_gen.generate(frame, size, process)  # histogram can generate only 1 mode anyway
         hist = g7_df[self.array].sum(axis=1).hist(bins=20)
         to_label = {
             'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
@@ -205,6 +213,9 @@ class HistogramGenerator(GraphGenerator):
         plt.close(fig)
         return canvas.get_tk_widget()
 
+    def __del__(self):
+        pass
+
 
 class StatGenerator(GraphGenerator):
     def __init__(self, **kwargs):
@@ -212,8 +223,11 @@ class StatGenerator(GraphGenerator):
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
 
-    def generate(self, frame: ttk.Frame, size, process=None) -> 'ttk.Treeview':
-        df = self.df_gen.generate(frame, size)  # stat can generate only 1 mode anyway
+    def generate(self, frame: ttk.Frame, size, process='normal') -> 'ttk.Treeview':
+        if process != "normal":
+            raise ValueError('statistic generating process can only be "normal".')
+
+        df = self.df_gen.generate(frame, size, process)  # stat can generate only 1 mode anyway
         stat_df = df[['death_total', 'death_rate']]
         stat_df = stat_df.rename(columns={'death_total': 'Total deaths', 'death_rate': 'Death rate'})
         des_stat = stat_df.describe()
@@ -236,13 +250,16 @@ class StatGenerator(GraphGenerator):
 
         return table
 
+    def __del__(self):
+        pass
+
 
 class DataframeGenerator(GraphGenerator):
     def __init__(self, **kwargs):
         super().__init__()
         self.__dict__.update(kwargs)
 
-    def generate(self, frame: ttk.Frame, size, process=None):
+    def generate(self, frame: ttk.Frame, size, process="normal"):
         df = copy.deepcopy(self.og_df)
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
@@ -269,6 +286,9 @@ class DataframeGenerator(GraphGenerator):
             new_df[col] = new_df[col] / new_df['population'] * 1e5
 
         return new_df
+
+    def __del__(self):
+        pass
 
 
 class DefaultGraph:
@@ -472,6 +492,9 @@ class DefaultGraph:
         # Linegraph death rate/year (speed limit range as hue)
         pass
 
+    def __del__(self):
+        pass
+
 
 class DefaultGraphCatalog(Enum):
 
@@ -502,5 +525,4 @@ class DefaultGraphCatalog(Enum):
 
 
 if __name__ == '__main__':
-    a = DefaultGraphCatalog.get_func('Speed limits/Death rate')
-    print(a)
+    import main
