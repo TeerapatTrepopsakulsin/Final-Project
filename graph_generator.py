@@ -140,9 +140,9 @@ class GraphGenerator(ABC):
 
     @mode.setter
     def mode(self, mode):
-        available = ("standard", "top")
+        available = ("standard", "top5")
         if mode not in available:
-            raise ValueError('Available modes are: "standard", "top"')
+            raise ValueError('Available modes are: "standard", "top5"')
         self.__mode = mode
 
     @property
@@ -159,24 +159,28 @@ class LinegraphGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
+        if self.mode == 'standard':
+            self.process = 'entity'
+        if self.mode == 'top5':
+            self.process = 'top5'
 
     def generate(self, frame: ttk.Frame, size, process="entity"):
-        if process == "normal":
-            raise ValueError('histogram generating process cannot be "normal".')
+        if process != "entity" and process != "top5":
+            raise ValueError('line graph generating process can only be "entity", "top5".')
 
         # figure
         fig, ax = plt.subplots(figsize=size)
 
-        # histogram
-        l_df = self.df_gen.generate(frame, size, process)
-        entity1_df = l_df[l_df['Entity'] == self.entity1]
-        entity2_df = l_df[l_df['Entity'] == self.entity2]
+        # line graph
+        l_df = self.df_gen.generate(frame, size, self.process)
+        en_arr = l_df['Entity'].unique()
 
-        yval1 = entity1_df[self.array].sum(axis=1)
-        yval2 = entity2_df[self.array].sum(axis=1)
+        for entity in en_arr:
+            entity_df = l_df[l_df['Entity'] == entity]
 
-        ax.plot(entity1_df['Year'], yval1)
-        ax.plot(entity2_df['Year'], yval2)
+            yval = entity_df[self.array].sum(axis=1)
+
+            ax.plot(entity_df['Year'], yval)
 
         width = (self.end_year - self.start_year) // 12 + 1
         ax.set_xticks(range(self.start_year, self.end_year + 1, width))
@@ -190,7 +194,7 @@ class LinegraphGenerator(GraphGenerator):
         ax.set_ylabel(f'{to_label[self.unit][1]}')
         ax.set_xlabel('Year')
         ax.set_title(f'Line graph of {to_label[self.unit][0]} from road incidents')
-        ax.legend([self.entity1, self.entity2])
+        ax.legend(en_arr, title='Entity')
 
         # Tkinter canvas that contain the figure
         canvas = FigureCanvasTkAgg(fig, master=frame)
@@ -198,7 +202,6 @@ class LinegraphGenerator(GraphGenerator):
 
         plt.close(fig)
         return canvas.get_tk_widget()
-        # TODO
 
     def __del__(self):
         pass
@@ -237,7 +240,7 @@ class HistogramGenerator(GraphGenerator):
             'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
             'death_total': ('total deaths', 'Total deaths (people)')
         }
-        plt.title(f'Histogram for {to_label[self.unit][0]} from road incidents')
+        plt.title(f'Histogram for {to_label[self.unit][0]} from road incidents in {self.start_year}')
         plt.xlabel(f'{to_label[self.unit][1]}')
         plt.ylabel('Frequency (Countries)')
         plt.tight_layout()
@@ -302,11 +305,18 @@ class DataframeGenerator(GraphGenerator):
 
         if process == 'entity':
             new_df = new_df[(new_df['Entity'] == self.entity1) | (new_df['Entity'] == self.entity2)]
-        elif process == 'top5':
-            # TODO
-            pass
 
         gen_df = self.initialise(new_df)
+
+        if process == "top5":
+            groupby_df = gen_df.groupby(['Entity'])[self.array].mean()
+            top_arr = groupby_df.sum(axis=1).sort_values(ascending=False)
+            top_arr = top_arr.index[:5]
+            gen_df = gen_df[(gen_df['Entity'] == top_arr[0]) |
+                            (gen_df['Entity'] == top_arr[1]) |
+                            (gen_df['Entity'] == top_arr[2]) |
+                            (gen_df['Entity'] == top_arr[3]) |
+                            (gen_df['Entity'] == top_arr[4])]
 
         return gen_df
 
@@ -484,7 +494,8 @@ class DefaultGraph:
 
         age_arr = ['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years']
         g5_df = g5_df.groupby(['Entity'])[age_arr].mean().sum()
-        g5_df.plot.bar(rot=0)
+        g5_df.plot.bar(rot=0, grid=True)
+        plt.tick_params(axis='x', grid_linewidth=0)
         plt.title('Average annual global death rate for each age range')
         plt.xlabel('Age')
         plt.ylabel('Death rate (deaths per 100,000 people)')
@@ -510,7 +521,8 @@ class DefaultGraph:
 
         type_arr = ['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other']
         g6_df = g6_df.groupby(['Entity'])[type_arr].mean().sum()
-        g6_df.plot.bar(rot=0)
+        g6_df.plot.bar(rot=0, grid=True)
+        plt.tick_params(axis='x', grid_linewidth=0)
         plt.title('Average annual global death rate for each type')
         plt.xlabel('Type')
         plt.ylabel('Death rate (deaths per 100,000 people)')
