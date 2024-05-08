@@ -53,7 +53,7 @@ class Storytelling(ttk.Frame):
 
         self.combobox = ttk.Combobox(self, textvariable=self.year, values=year_arr, state='readonly')
 
-        self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.combobox.bind('<<ComboboxSelected>>', self.handle_select_year)
 
         self.year.set('Select Year')
 
@@ -103,7 +103,7 @@ class DataExploration(ttk.Frame):
         self.graph = self.controller.initialise_dte(self)
 
         # filter bar
-        self.filter_bar = FilterBar(self)
+        self.filter_bar = FilterBar(self, self.controller)
 
         self.filter_bar.bind('<Button>', self.handle_generate)
 

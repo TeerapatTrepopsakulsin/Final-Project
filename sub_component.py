@@ -1,23 +1,120 @@
 """Sub-component module"""
 import tkinter as tk
+import customtkinter as cttk
 from tkinter import ttk
+from controller import Controller
 
 
 class FilterBar(ttk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
+        self.controller = controller
+        self.start_year = tk.StringVar()
+        self.end_year = tk.StringVar()
+        self.entity1 = tk.StringVar()
+        self.entity2 = tk.StringVar()
+        self.unit = tk.StringVar()
+        self.mode = tk.StringVar()
+        self.graph = tk.StringVar()
         self.init_components()
 
     def init_components(self):
-        options = {'font': ('Georgia', 21)}
+        options = {'font': ('Arial', 21, 'bold')}
+        n_font = {'font': ('Arial', 14)}
+        s_font = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
         color = {'fg': "Black", 'bg': 'white'}
 
-        self.label = tk.Label(self, text='Filter Bar', **options, **color)
-        self.label.grid(row=0, column=0, **sticky)
+        # label
+        self.label = tk.Label(self, text='Filter Bar', anchor=tk.W, **options, **color)
 
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
+        # year filter
+        self.yr_label = tk.Label(self, text='Year', **n_font, **color)
+        self.yrbg_label = tk.Label(self, text='Begin:', anchor=tk.W, **s_font, **color)
+        self.yren_label = tk.Label(self, text='End:', anchor=tk.W, **s_font, **color)
+
+        year1_arr = list(map(lambda x: str(x), range(1990, 2020)))
+        self.yrbg_cbb = ttk.Combobox(self, textvariable=self.start_year, values=year1_arr, state='readonly')
+        #self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.yrbg_cbb.set('1990')
+
+        year2_arr = list(map(lambda x: str(x), range(int(self.start_year.get()), 2020)))
+        self.yren_cbb = ttk.Combobox(self, textvariable=self.end_year, values=year2_arr, state='readonly')
+        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.yren_cbb.set('2019')
+
+        # entity filter
+        self.en_label = tk.Label(self, text='Entity', **n_font, **color)
+        self.en1_label = tk.Label(self, text='Entity 1:', anchor=tk.W, **s_font, **color)
+        self.en2_label = tk.Label(self, text='Entity 2:', anchor=tk.W, **s_font, **color)
+
+        en_arr = self.controller.get_entity_list()
+        self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1, values=en_arr, state='readonly', width=33)
+        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.en1_cbb.set('Thailand')
+
+        self.en2_cbb = ttk.Combobox(self, textvariable=self.entity2, values=en_arr, state='readonly', width=33)
+        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.en2_cbb.set('World')
+
+        # unit
+        unit_arr = ('Death rate', 'Total deaths')
+        self.unit_label = tk.Label(self, text='Unit', **n_font, **color)
+        self.unit_cbb = ttk.Combobox(self, textvariable=self.unit, values=unit_arr, state='readonly')
+        self.unit.set("Death rate")
+
+        # mode
+        mode_arr = ("Standard", "Top Rankings")
+        self.mode_label = tk.Label(self, text='Mode', **n_font, **color)
+        self.mode_cbb = ttk.Combobox(self, textvariable=self.mode, values=mode_arr, state='readonly')
+        self.mode.set("Standard")
+
+        # graph
+        graph_arr = ("Line Graph", "Bar Graph", "Histogram")
+        self.grph_label = tk.Label(self, text='Graph', **n_font, **color)
+        self.grph_cbb = ttk.Combobox(self, textvariable=self.graph, values=graph_arr, state='readonly')
+        self.graph.set("Line Graph")
+
+        # generate button
+        self.gen = tk.Button(self, text='GENERATE', **options, **color)
+
+        # grid
+        self.label.grid(row=0, column=0, columnspan=4, **sticky)
+
+        self.yr_label.grid(row=1, column=0, columnspan=2, **sticky)
+        self.yrbg_label.grid(row=2, column=0, **sticky)
+        self.yren_label.grid(row=2, column=1, **sticky)
+        self.yrbg_cbb.grid(row=3, column=0, **sticky)
+        self.yren_cbb.grid(row=3, column=1, **sticky)
+
+        self.en_label.grid(row=1, column=2, columnspan=2, **sticky)
+        self.en1_label.grid(row=2, column=2, **sticky)
+        self.en2_label.grid(row=2, column=3, **sticky)
+        self.en1_cbb.grid(row=3, column=2, **sticky)
+        self.en2_cbb.grid(row=3, column=3, **sticky)
+
+        self.unit_label.grid(row=5, column=0, **sticky)
+        self.unit_cbb.grid(row=5, column=1, **sticky)
+
+        self.mode_label.grid(row=6, column=0, **sticky)
+        self.mode_cbb.grid(row=6, column=1, **sticky)
+
+        self.grph_label.grid(row=7, column=0, **sticky)
+        self.grph_cbb.grid(row=7, column=1, **sticky)
+
+        self.gen.grid(row=9, column=0, columnspan=4, **sticky)
+
+        for i in range(10):
+            self.rowconfigure(i, weight=1)
+        self.rowconfigure(1, weight=0)
+        self.rowconfigure(2, weight=0)
+        self.rowconfigure(8, weight=5)
+        for i in range(4):
+            self.columnconfigure(i, weight=1)
+
+        style = ttk.Style()
+        style.configure("My.TFrame", background='white')
+        self.configure(style="My.TFrame")
 
 
 class Keypad(ttk.Frame):

@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from graph_generator import GraphGenerator, DefaultGraphCatalog
+from entity import Entity
 
 
 class Controller:
@@ -71,7 +72,12 @@ class Controller:
 
         return line
 
-    def handle_generate(self):
+    @staticmethod
+    def get_entity_list():
+        en_list = Entity['ALL'].value
+        return en_list
+
+    def handle_generate(self, *args):
         # TODO
         # if len(self.generator.array) >= 5:
         #     self.generator.array = [self.generator.unit]
