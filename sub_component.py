@@ -8,8 +8,8 @@ class FilterBar(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.controller = controller
-        self.start_year = tk.StringVar()
-        self.end_year = tk.StringVar()
+        self.start_year = tk.IntVar()
+        self.end_year = tk.IntVar()
         self.entity1 = tk.StringVar()
         self.entity2 = tk.StringVar()
         self.unit = tk.StringVar()
@@ -63,17 +63,37 @@ class FilterBar(ttk.Frame):
         self.graph_state()
         self.controller.generator.setup(graph=self.graph.get())
 
+    def handle_start_year_select(self, *args):
+        year = self.start_year.get()
+        self.controller.generator.setup(start_year=year)
+
+        year_arr = list(map(lambda x: str(x), range(year, 2020)))
+        self.yren_cbb.configure(values=year_arr)
+        if year > self.end_year.get():
+            self.end_year.set(year)
+            self.controller.generator.setup(end_year=year)
+
+    def handle_end_year_select(self, *args):
+        year = self.end_year.get()
+        self.controller.generator.setup(end_year=year)
+
+    def handle_entity1_select(self, *args):
+        entity = self.entity1.get()
+        self.controller.generator.setup(entity1=entity)
+
+    def handle_entity2_select(self, *args):
+        entity = self.entity2.get()
+        self.controller.generator.setup(entity2=entity)
+
+    def handle_unit_select(self, *args):
+        unit = self.unit.get()
+        self.controller.generator.setup(unit=unit)
+
     def handle_generate(self, *args):
-        print(self.controller.generator.start_year)
-        print(self.controller.generator.end_year)
-        print(self.controller.generator.entity1)
-        print(self.controller.generator.entity2)
-        print(self.controller.generator.unit)
-        print(self.controller.generator.array)
-        print(self.controller.generator.mode)
-        print(self.controller.generator.graph)
-        print(self.controller.generator.og_df_name)
-        print('-'*21)
+        g_array = self.type_sel.get_array()
+        self.controller.generator.setup(array=g_array)
+
+
 
     def init_components(self):
         options = {'font': ('Arial', 21, 'bold')}
@@ -94,12 +114,12 @@ class FilterBar(ttk.Frame):
 
         year1_arr = list(map(lambda x: str(x), range(1990, 2020)))
         self.yrbg_cbb = ttk.Combobox(self, textvariable=self.start_year, values=year1_arr, state='readonly')
-        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.yrbg_cbb.bind('<<ComboboxSelected>>', self.handle_start_year_select)
         self.yrbg_cbb.set('1990')
 
-        year2_arr = list(map(lambda x: str(x), range(int(self.start_year.get()), 2020)))
+        year2_arr = list(map(lambda x: str(x), range(self.start_year.get(), 2020)))
         self.yren_cbb = ttk.Combobox(self, textvariable=self.end_year, values=year2_arr, state='readonly')
-        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.yren_cbb.bind('<<ComboboxSelected>>', self.handle_end_year_select)
         self.yren_cbb.set('2019')
 
         # entity filter
@@ -109,11 +129,11 @@ class FilterBar(ttk.Frame):
 
         en_arr = self.controller.get_entity_list()
         self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1, values=en_arr, state='readonly', width=33)
-        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.en1_cbb.bind('<<ComboboxSelected>>', self.handle_entity1_select)
         self.en1_cbb.set('World')
 
         self.en2_cbb = ttk.Combobox(self, textvariable=self.entity2, values=en_arr, state='readonly', width=33)
-        # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
+        self.en2_cbb.bind('<<ComboboxSelected>>', self.handle_entity2_select)
         self.en2_cbb.set('Thailand')
 
         # type selection
@@ -123,6 +143,7 @@ class FilterBar(ttk.Frame):
         unit_arr = ('Death rate', 'Total deaths')
         self.unit_label = tk.Label(self, text='Unit', **n_font, **color)
         self.unit_cbb = ttk.Combobox(self, textvariable=self.unit, values=unit_arr, state='readonly')
+        self.unit_cbb.bind('<<ComboboxSelected>>', self.handle_unit_select)
         self.unit.set("Death rate")
 
         # mode
@@ -212,6 +233,9 @@ class TypeSelection(ttk.Frame):
             self.cur_list = self.avail_type
         for i in range(len(self.cur_list)):
             self.checkbutton[i].configure(text=self.cur_list[i])
+        for ckb in self.checkbutton[:-1]:
+            ckb.deselect()
+        self.ckb6.select()
 
     def handle_select_normal(self, *args):
         self.ckb6.deselect()
@@ -243,7 +267,7 @@ class TypeSelection(ttk.Frame):
         self.ckb6 = tk.Checkbutton(self)
         self.checkbutton = [self.ckb1, self.ckb2, self.ckb3, self.ckb4, self.ckb5, self.ckb6]
         for i in range(len(self.checkbutton)):
-            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, command=self.handle_select_normal, **s_font)
+            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, anchor=tk.W,command=self.handle_select_normal, **s_font)
         self.ckb6.configure(command=self.handle_select_all)
 
         # grid
