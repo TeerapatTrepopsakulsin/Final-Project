@@ -202,11 +202,17 @@ class TypeSelection(ttk.Frame):
         style.configure("My.TFrame", background='white')
         self.configure(style="My.TFrame", borderwidth=20)
 
-        self.ckb1.deselect()
+        for ckb in self.checkbutton:
+            ckb.deselect()
 
     def get_array(self):
-        pass
-
+        lst = []
+        for sel in self.sel_list:
+            if sel.get() == 5:
+                return self.cur_list[:-1]
+            elif sel.get() > -1:
+                lst.append(self.cur_list[sel.get()])
+        return lst
 
 
 class Keypad(ttk.Frame):
