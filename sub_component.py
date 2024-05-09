@@ -208,6 +208,7 @@ class FilterBar(ttk.Frame):
 class TypeSelection(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
+        self.controller = controller
         self.checkbutton = []
         self.avail_age = ('Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years', 'All')
         self.avail_type = ('pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other', 'All')
@@ -294,7 +295,8 @@ class TypeSelection(ttk.Frame):
     def get_array(self):
         lst = []
         for sel in self.sel_list:
-            if sel.get() == 5:
+            graph = self.controller.generator.graph
+            if sel.get() == 5 and graph == 'Bar Graph':
                 return self.cur_list[:-1]
             elif sel.get() > -1:
                 lst.append(self.cur_list[sel.get()])
