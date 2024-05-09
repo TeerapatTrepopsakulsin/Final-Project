@@ -22,8 +22,8 @@ class GraphGenerator(ABC):
         self.__end_year = 2019
         self.__entity1 = 'World'
         self.__entity2 = 'Thailand'
-        self.__unit = 'death_total'
-        self.__array = ['death_total']
+        self.__unit = 'death_rate'
+        self.__array = ['death_rate']
         self.__mode = 'standard'
         self.__graph = 'Histogram'
         self.__og_df = DF_OC
@@ -34,8 +34,8 @@ class GraphGenerator(ABC):
             return LinegraphGenerator(**attr)
         elif self.graph == 'Histogram':
             return HistogramGenerator(**attr)
-        elif self.graph == 'Bar graph':
-            return LinegraphGenerator(**attr)
+        elif self.graph == 'Bar Graph':
+            return BargraphGenerator(**attr)
         elif self.graph == 'Stat':
             return StatGenerator(**attr)
 
@@ -92,9 +92,9 @@ class GraphGenerator(ABC):
 
     @graph.setter
     def graph(self, graph):
-        available = ("Histogram", "Line Graph", "Bar graph", "Stat")
+        available = ("Histogram", "Line Graph", "Bar Graph", "Stat")
         if graph not in available:
-            raise ValueError('Available graph types are: "Histogram", "Line Graph", "Bar graph", "Stat"')
+            raise ValueError('Available graph types are: "Histogram", "Line Graph", "Bar Graph", "Stat"')
         self.__graph = graph
 
     @property
@@ -212,10 +212,54 @@ class BargraphGenerator(GraphGenerator):
         super().__init__()
         self.__dict__.update(kwargs)
         self.df_gen = DataframeGenerator(**self.__dict__)
+        if self.mode == 'standard':
+            self.process = 'entity'
+        if self.mode == 'top5':
+            self.process = 'top5'
 
-    def generate(self, frame: ttk.Frame, size, process="normal"):
+    def generate(self, frame: ttk.Frame, size, process="entity"):
         # TODO
-        pass
+        if process != "entity" and process != "top5":
+            raise ValueError(f'bar graph generating process can only be "entity", "top5"; not {process}')
+
+        # figure
+
+        fig, ax = plt.subplots(figsize=size)
+
+        # bar graph
+        b_df = self.df_gen.generate(frame, size, self.process)
+        groupby_df = b_df[['Entity'] + self.array].groupby(['Entity']).mean()
+        en_arr = groupby_df.index
+        type_arr = self.array
+
+        # set width of bar
+        bar_width = 1 / (len(en_arr) + 1)
+
+        # Make the plot
+        colour_arr = ['royalblue', 'orange', 'forestgreen', 'firebrick', 'mediumpurple']
+        for i in range(len(en_arr)):
+            br = [x + i*bar_width for x in np.arange(len(type_arr))]
+            print(br)
+            en = groupby_df.iloc[i]
+            clr = colour_arr[i]
+            plt.bar(br, en, color=clr, width=bar_width, label=en_arr[i])
+
+        to_label = {
+            'death_rate': ('death rate', 'Death rate (deaths per 100,000 people)'),
+            'death_total': ('total deaths', 'Total deaths (people)')
+        }
+        plt.ylabel(f'{to_label[self.unit][1]}')
+        plt.title(f'Average annual {to_label[self.unit][0]} in {self.start_year} - {self.end_year}')
+        plt.grid()
+        plt.xticks([r + 0.5*(len(en_arr)-1)*bar_width for r in range(len(type_arr))], self.array)
+        plt.tick_params(axis='x', grid_linewidth=0)
+        plt.legend(title='Entity')
+
+        canvas = FigureCanvasTkAgg(fig, master=frame)
+        canvas.draw()
+
+        plt.close(fig)
+        return canvas.get_tk_widget()
 
     def __del__(self):
         pass
@@ -351,7 +395,8 @@ class DefaultGraph:
         colour = np.array(['red', 'green'])
 
         g1_df.plot(kind='bar', stacked=False, xlabel='Existence of seat-belt law',
-                   ylabel='Average death rate (deaths per 100,000 people)', color=colour, rot=0)
+                   ylabel='Average death rate (deaths per 100,000 people)', color=colour, rot=0, grid=True)
+        plt.tick_params(axis='x', grid_linewidth=0)
         plt.title('Average death rate of countries with and without seat-belt law')
         plt.tight_layout()
 
