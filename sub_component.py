@@ -16,6 +16,64 @@ class FilterBar(ttk.Frame):
         self.mode = tk.StringVar()
         self.graph = tk.StringVar()
         self.init_components()
+        self.graph_state = self.all_features
+        self.mode_state = self.standard
+
+    def all_features(self):
+        self.en1_cbb.configure(state="readonly")
+        self.en2_cbb.configure(state="readonly")
+        self.yren_cbb.configure(state="readonly")
+        self.mode_cbb.configure(state="readonly")
+        self.mode.set("Standard")
+        self.controller.generator.setup(mode="standard")
+        self.controller.generator.set_all()
+
+    def histogram(self):
+        self.en1_cbb.configure(state="disabled")
+        self.en2_cbb.configure(state="disabled")
+        self.yren_cbb.configure(state="disabled")
+        self.mode_cbb.configure(state="disabled")
+        self.mode.set("Standard")
+        self.controller.generator.setup(mode="standard")
+        self.controller.generator.set_only_country()
+
+    def standard(self):
+        self.en1_cbb.configure(state="readonly")
+        self.en2_cbb.configure(state="readonly")
+        self.controller.generator.set_all()
+
+    def top5(self):
+        self.en1_cbb.configure(state="disabled")
+        self.en2_cbb.configure(state="disabled")
+        self.controller.generator.set_only_country()
+
+    def handle_mode_select(self, *args):
+        if self.mode.get() == "Standard":
+            self.mode_state = self.standard
+        elif self.mode.get() == "Top Rankings":
+            self.mode_state = self.top5
+        self.mode_state()
+        self.controller.generator.setup(mode=self.mode.get())
+
+    def handle_graph_select(self, *args):
+        if self.graph.get() == 'Histogram':
+            self.graph_state = self.histogram
+        else:
+            self.graph_state = self.all_features
+        self.graph_state()
+        self.controller.generator.setup(graph=self.graph.get())
+
+    def handle_generate(self, *args):
+        print(self.controller.generator.start_year)
+        print(self.controller.generator.end_year)
+        print(self.controller.generator.entity1)
+        print(self.controller.generator.entity2)
+        print(self.controller.generator.unit)
+        print(self.controller.generator.array)
+        print(self.controller.generator.mode)
+        print(self.controller.generator.graph)
+        print(self.controller.generator.og_df_name)
+        print('-'*21)
 
     def init_components(self):
         options = {'font': ('Arial', 21, 'bold')}
@@ -52,11 +110,11 @@ class FilterBar(ttk.Frame):
         en_arr = self.controller.get_entity_list()
         self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1, values=en_arr, state='readonly', width=33)
         # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
-        self.en1_cbb.set('Thailand')
+        self.en1_cbb.set('World')
 
         self.en2_cbb = ttk.Combobox(self, textvariable=self.entity2, values=en_arr, state='readonly', width=33)
         # self.combobox.bind_all('<<ComboboxSelected>>', self.handle_select_year)
-        self.en2_cbb.set('World')
+        self.en2_cbb.set('Thailand')
 
         # type selection
         self.type_sel = TypeSelection(self, self.controller)
@@ -71,16 +129,19 @@ class FilterBar(ttk.Frame):
         mode_arr = ("Standard", "Top Rankings")
         self.mode_label = tk.Label(self, text='Mode', **n_font, **color)
         self.mode_cbb = ttk.Combobox(self, textvariable=self.mode, values=mode_arr, state='readonly')
+        self.mode_cbb.bind('<<ComboboxSelected>>', self.handle_mode_select)
         self.mode.set("Standard")
 
         # graph
         graph_arr = ("Line Graph", "Bar Graph", "Histogram")
         self.grph_label = tk.Label(self, text='Graph', **n_font, **color)
         self.grph_cbb = ttk.Combobox(self, textvariable=self.graph, values=graph_arr, state='readonly')
+        self.grph_cbb.bind('<<ComboboxSelected>>', self.handle_graph_select)
         self.graph.set("Line Graph")
 
         # generate button
         self.gen = tk.Button(self, text='GENERATE', **options, **color)
+        self.gen.bind('<Button>', self.handle_generate)
 
         # grid
         self.label.grid(row=0, column=0, columnspan=4, **sticky)
@@ -170,7 +231,7 @@ class TypeSelection(ttk.Frame):
         # combobox
         type_arr = ('by age', 'by vehicle type')
         self.combobox = ttk.Combobox(self, textvariable=self.type, values=type_arr, state='readonly')
-        self.combobox.bind_all('<<ComboboxSelected>>', self.handle_combobox)
+        self.combobox.bind('<<ComboboxSelected>>', self.handle_combobox)
         self.type.set('by age')
 
         # check buttons
@@ -182,7 +243,7 @@ class TypeSelection(ttk.Frame):
         self.ckb6 = tk.Checkbutton(self)
         self.checkbutton = [self.ckb1, self.ckb2, self.ckb3, self.ckb4, self.ckb5, self.ckb6]
         for i in range(len(self.checkbutton)):
-            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', command=self.handle_select_normal, **s_font)
+            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, command=self.handle_select_normal, **s_font)
         self.ckb6.configure(command=self.handle_select_all)
 
         # grid
@@ -204,6 +265,7 @@ class TypeSelection(ttk.Frame):
 
         for ckb in self.checkbutton:
             ckb.deselect()
+        self.ckb6.select()
 
     def get_array(self):
         lst = []

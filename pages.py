@@ -89,7 +89,7 @@ class DataExploration(ttk.Frame):
         self.year = tk.StringVar()
         self.init_components()
 
-    def handle_generate(self):
+    def handle_generate(self, *args):
         # TODO
         pass
 
@@ -105,8 +105,6 @@ class DataExploration(ttk.Frame):
         # filter bar
         self.filter_bar = FilterBar(self, self.controller)
 
-        self.filter_bar.bind('<Button>', self.handle_generate)
-
         # grid
         self.graph.grid(row=0, column=0, **sticky, **pad)
         self.filter_bar.grid(row=0, column=1, **sticky, **pad)
@@ -114,8 +112,8 @@ class DataExploration(ttk.Frame):
         # frame
         for i in range(1):
             self.rowconfigure(i, weight=1)
-        for i in range(2):
-            self.columnconfigure(i, weight=1)
+        self.columnconfigure(0, weight=2)
+        self.columnconfigure(0, weight=1)
 
 
 if __name__ == '__main__':
