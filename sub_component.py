@@ -91,9 +91,20 @@ class FilterBar(ttk.Frame):
 
     def handle_generate(self, *args):
         g_array = self.type_sel.get_array()
+        if g_array == ['All']:
+            g_array = [self.unit.get()]
         self.controller.generator.setup(array=g_array)
 
-
+        print(self.controller.generator.start_year)
+        print(self.controller.generator.end_year)
+        print(self.controller.generator.entity1)
+        print(self.controller.generator.entity2)
+        print(self.controller.generator.unit)
+        print(self.controller.generator.array)
+        print(self.controller.generator.mode)
+        print(self.controller.generator.graph)
+        print(self.controller.generator.og_df_name)
+        print('-' * 21)
 
     def init_components(self):
         options = {'font': ('Arial', 21, 'bold')}
@@ -242,7 +253,6 @@ class TypeSelection(ttk.Frame):
         self.ckb6.deselect()
 
     def init_components(self):
-        options = {'font': ('Arial', 21, 'bold')}
         n_font = {'font': ('Arial', 14)}
         s_font = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
@@ -268,7 +278,7 @@ class TypeSelection(ttk.Frame):
         self.ckb6 = tk.Checkbutton(self)
         self.checkbutton = [self.ckb1, self.ckb2, self.ckb3, self.ckb4, self.ckb5, self.ckb6]
         for i in range(len(self.checkbutton)):
-            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, anchor=tk.W,command=self.handle_select_normal, **s_font)
+            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, anchor=tk.W, command=self.handle_select_normal, **s_font)
         self.ckb6.configure(command=self.handle_select_all)
 
         # grid
@@ -293,12 +303,14 @@ class TypeSelection(ttk.Frame):
         self.ckb6.select()
 
     def get_array(self):
+        graph = self.controller.generator.graph
+        sel_val = list(map(lambda x: x.get(), self.sel_list[:-1]))
+        if -1 not in sel_val and graph != 'Bar Graph':
+            return ['All']
+
         lst = []
         for sel in self.sel_list:
-            graph = self.controller.generator.graph
-            if sel.get() == 5 and graph == 'Bar Graph':
-                return self.cur_list[:-1]
-            elif sel.get() > -1:
+            if sel.get() > -1:
                 lst.append(self.cur_list[sel.get()])
         return lst
 
