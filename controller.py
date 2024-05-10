@@ -68,8 +68,6 @@ class Controller:
         generator = self.generator.get_generator()
         line = generator.generate(frame, size)
 
-        # TODO
-
         return line
 
     @staticmethod
@@ -77,11 +75,12 @@ class Controller:
         en_list = Entity['ALL'].value
         return en_list
 
-    def handle_generate(self, *args):
-        # TODO
-        # if len(self.generator.array) >= 5:
-        #     self.generator.array = [self.generator.unit]
-        pass
+    def handle_generate(self, frame: ttk.Frame):
+        size = (8, 5)
+        generator = self.generator.get_generator()
+        graph = generator.generate(frame, size)
+
+        return graph
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ from controller import Controller
 class FilterBar(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
+        self.parent = parent
         self.controller = controller
         self.start_year = tk.IntVar()
         self.end_year = tk.IntVar()
@@ -50,10 +51,11 @@ class FilterBar(ttk.Frame):
     def handle_mode_select(self, *args):
         if self.mode.get() == "Standard":
             self.mode_state = self.standard
+            self.controller.generator.setup(mode='standard')
         elif self.mode.get() == "Top Rankings":
             self.mode_state = self.top5
+            self.controller.generator.setup(mode='top5')
         self.mode_state()
-        self.controller.generator.setup(mode=self.mode.get())
 
     def handle_graph_select(self, *args):
         if self.graph.get() == 'Histogram':
@@ -86,25 +88,21 @@ class FilterBar(ttk.Frame):
         self.controller.generator.setup(entity2=entity)
 
     def handle_unit_select(self, *args):
-        unit = self.unit.get()
+        unit_label = self.unit.get()
+        to_unit = {'Death rate': 'death_rate', 'Total deaths': 'death_total'}
+        unit = to_unit[unit_label]
         self.controller.generator.setup(unit=unit)
 
     def handle_generate(self, *args):
         g_array = self.type_sel.get_array()
         if g_array == ['All']:
-            g_array = [self.unit.get()]
+            to_unit = {'Death rate': 'death_rate', 'Total deaths': 'death_total'}
+            unit = to_unit[self.unit.get()]
+            g_array = [unit]
+
         self.controller.generator.setup(array=g_array)
 
-        print(self.controller.generator.start_year)
-        print(self.controller.generator.end_year)
-        print(self.controller.generator.entity1)
-        print(self.controller.generator.entity2)
-        print(self.controller.generator.unit)
-        print(self.controller.generator.array)
-        print(self.controller.generator.mode)
-        print(self.controller.generator.graph)
-        print(self.controller.generator.og_df_name)
-        print('-' * 21)
+        self.parent.handle_generate()
 
     def init_components(self):
         options = {'font': ('Arial', 21, 'bold')}
@@ -223,7 +221,10 @@ class TypeSelection(ttk.Frame):
         self.checkbutton = []
         self.avail_age = ('Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years', 'All')
         self.avail_type = ('pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other', 'All')
+        self.age_list = ('age_0_4', 'age_5_14', 'age_15_49', 'age_50_69', 'age_70', 'All')
+        self.type_list = ('type_pedestrian', 'type_motorvehicle', 'type_motorcyclist', 'type_cyclist', 'type_other', 'All')
         self.cur_list = self.avail_age
+        self.cur_list_use = self.age_list
         self.type = tk.StringVar()
         self.sel1 = tk.IntVar()
         self.sel2 = tk.IntVar()
@@ -241,8 +242,10 @@ class TypeSelection(ttk.Frame):
     def handle_combobox(self, *args):
         if self.type.get() == 'by age':
             self.cur_list = self.avail_age
+            self.cur_list_use = self.age_list
         elif self.type.get() == 'by vehicle type':
             self.cur_list = self.avail_type
+            self.cur_list_use = self.type_list
         for i in range(len(self.cur_list)):
             self.checkbutton[i].configure(text=self.cur_list[i])
         for ckb in self.checkbutton[:-1]:
@@ -311,7 +314,7 @@ class TypeSelection(ttk.Frame):
         lst = []
         for sel in self.sel_list:
             if sel.get() > -1:
-                lst.append(self.cur_list[sel.get()])
+                lst.append(self.cur_list_use[sel.get()])
         return lst
 
 

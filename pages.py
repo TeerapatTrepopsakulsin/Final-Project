@@ -90,13 +90,18 @@ class DataExploration(ttk.Frame):
         self.init_components()
 
     def handle_generate(self, *args):
-        # TODO
-        pass
+        sticky = {'sticky': tk.NSEW}
+        pad = {'padx': 10, 'pady': 5}
+
+        self.graph.destroy()
+        self.graph = self.controller.handle_generate(self)
+
+        # re-grid
+        self.graph.grid(row=0, column=0, **sticky, **pad)
+
 
     def init_components(self):
-        options = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
-        color = {'fg': "Black", 'bg': 'white'}
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
