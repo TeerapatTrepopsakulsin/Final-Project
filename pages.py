@@ -1,4 +1,5 @@
 """Pages module"""
+import copy
 import tkinter as tk
 from tkinter import ttk
 from controller import Controller
@@ -9,7 +10,7 @@ class Storytelling(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
-        self.controller = controller
+        self.controller = copy.deepcopy(controller)
         self.year = tk.StringVar()
         self.init_components()
 
@@ -85,7 +86,7 @@ class DataExploration(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
-        self.controller = controller
+        self.controller = copy.deepcopy(controller)
         self.year = tk.StringVar()
         self.init_components()
 
@@ -124,7 +125,7 @@ class DataExploration(ttk.Frame):
 class Dataset(ttk.Frame):
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
-        self.controller = controller
+        self.controller = copy.deepcopy(controller)
         self.init_components()
 
     def init_components(self):
@@ -138,7 +139,6 @@ class Dataset(ttk.Frame):
         self.treeview.configure(yscroll=self.y_scrollbar.set)
         self.x_scrollbar = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.treeview.xview)
         self.treeview.configure(xscroll=self.x_scrollbar.set)
-
 
         # grid
         self.treeview.grid(row=0, column=0, **sticky)
