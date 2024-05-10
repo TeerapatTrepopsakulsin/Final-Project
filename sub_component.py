@@ -5,6 +5,7 @@ from controller import Controller
 
 
 class FilterBar(ttk.Frame):
+    """Filter bar for users to filtered wanted graph in Data Exploration page."""
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
@@ -21,6 +22,10 @@ class FilterBar(ttk.Frame):
         self.mode_state = self.standard
 
     def all_features(self):
+        """
+        State which all features in the filter bar are enable.
+        For Line graph and Bar graph only.
+        """
         self.en1_cbb.configure(state="readonly")
         self.en2_cbb.configure(state="readonly")
         self.yren_cbb.configure(state="readonly")
@@ -30,6 +35,10 @@ class FilterBar(ttk.Frame):
         self.controller.generator.set_all()
 
     def histogram(self):
+        """
+        State which some features in the filter bar are enable.
+        For Histogram.
+        """
         self.en1_cbb.configure(state="disabled")
         self.en2_cbb.configure(state="disabled")
         self.yren_cbb.configure(state="disabled")
@@ -39,16 +48,27 @@ class FilterBar(ttk.Frame):
         self.controller.generator.set_only_country()
 
     def standard(self):
+        """
+        State for Standard mode.
+        For Standard mode only.
+        """
         self.en1_cbb.configure(state="readonly")
         self.en2_cbb.configure(state="readonly")
         self.controller.generator.set_all()
 
     def top5(self):
+        """
+        State for Top rankings' mode.
+        For Top rankings mode only.
+        """
         self.en1_cbb.configure(state="disabled")
         self.en2_cbb.configure(state="disabled")
         self.controller.generator.set_only_country()
 
     def handle_mode_select(self, *args):
+        """
+        Switch mode state when users select mode.
+        """
         if self.mode.get() == "Standard":
             self.mode_state = self.standard
             self.controller.generator.setup(mode='standard')
@@ -58,6 +78,9 @@ class FilterBar(ttk.Frame):
         self.mode_state()
 
     def handle_graph_select(self, *args):
+        """
+        Switch graph state when users select graph.
+        """
         if self.graph.get() == 'Histogram':
             self.graph_state = self.histogram
         else:
@@ -66,34 +89,54 @@ class FilterBar(ttk.Frame):
         self.controller.generator.setup(graph=self.graph.get())
 
     def handle_start_year_select(self, *args):
+        """
+        Set start year attribute for generator and
+        disabled select previous year for end year when users select begin year.
+        """
         year = self.start_year.get()
         self.controller.generator.setup(start_year=year)
 
-        year_arr = list(map(lambda x: str(x), range(year, 2020)))
+        year_arr = list(map(str, range(year, 2020)))
         self.yren_cbb.configure(values=year_arr)
         if year > self.end_year.get():
             self.end_year.set(year)
             self.controller.generator.setup(end_year=year)
 
     def handle_end_year_select(self, *args):
+        """
+        Set end year attribute for generator when users select end year.
+        """
         year = self.end_year.get()
         self.controller.generator.setup(end_year=year)
 
     def handle_entity1_select(self, *args):
+        """
+        Set entity1 attribute for generator when users select entity1.
+        """
         entity = self.entity1.get()
         self.controller.generator.setup(entity1=entity)
 
     def handle_entity2_select(self, *args):
+        """
+        Set entity2 attribute for generator when users select entity2.
+        """
         entity = self.entity2.get()
         self.controller.generator.setup(entity2=entity)
 
     def handle_unit_select(self, *args):
+        """
+        Set unit attribute for generator when users select unit.
+        """
         unit_label = self.unit.get()
         to_unit = {'Death rate': 'death_rate', 'Total deaths': 'death_total'}
         unit = to_unit[unit_label]
         self.controller.generator.setup(unit=unit)
 
     def handle_generate(self, *args):
+        """
+        When users press the generate button,
+        setup attributes and let the page handle generate graph.
+        """
         g_array = self.type_sel.get_array()
         if g_array == ['All']:
             to_unit = {'Death rate': 'death_rate', 'Total deaths': 'death_total'}
@@ -105,6 +148,9 @@ class FilterBar(ttk.Frame):
         self.parent.handle_generate()
 
     def init_components(self):
+        """
+        Initialise the components and layout for the UI.
+        """
         options = {'font': ('Arial', 21, 'bold')}
         n_font = {'font': ('Arial', 14)}
         s_font = {'font': ('Arial', 11)}
@@ -121,13 +167,15 @@ class FilterBar(ttk.Frame):
         self.yrbg_label = tk.Label(self, text='Begin:', anchor=tk.W, **s_font, **color)
         self.yren_label = tk.Label(self, text='End:', anchor=tk.W, **s_font, **color)
 
-        year1_arr = list(map(lambda x: str(x), range(1990, 2020)))
-        self.yrbg_cbb = ttk.Combobox(self, textvariable=self.start_year, values=year1_arr, state='readonly')
+        year1_arr = list(map(str, range(1990, 2020)))
+        self.yrbg_cbb = ttk.Combobox(self, textvariable=self.start_year,
+                                     values=year1_arr, state='readonly')
         self.yrbg_cbb.bind('<<ComboboxSelected>>', self.handle_start_year_select)
         self.yrbg_cbb.set('1990')
 
-        year2_arr = list(map(lambda x: str(x), range(self.start_year.get(), 2020)))
-        self.yren_cbb = ttk.Combobox(self, textvariable=self.end_year, values=year2_arr, state='readonly')
+        year2_arr = list(map(str, range(self.start_year.get(), 2020)))
+        self.yren_cbb = ttk.Combobox(self, textvariable=self.end_year,
+                                     values=year2_arr, state='readonly')
         self.yren_cbb.bind('<<ComboboxSelected>>', self.handle_end_year_select)
         self.yren_cbb.set('2019')
 
@@ -137,11 +185,13 @@ class FilterBar(ttk.Frame):
         self.en2_label = tk.Label(self, text='Entity 2:', anchor=tk.W, **s_font, **color)
 
         en_arr = self.controller.get_entity_list()
-        self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1, values=en_arr, state='readonly', width=33)
+        self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1,
+                                    values=en_arr, state='readonly', width=33)
         self.en1_cbb.bind('<<ComboboxSelected>>', self.handle_entity1_select)
         self.en1_cbb.set('World')
 
-        self.en2_cbb = ttk.Combobox(self, textvariable=self.entity2, values=en_arr, state='readonly', width=33)
+        self.en2_cbb = ttk.Combobox(self, textvariable=self.entity2,
+                                    values=en_arr, state='readonly', width=33)
         self.en2_cbb.bind('<<ComboboxSelected>>', self.handle_entity2_select)
         self.en2_cbb.set('Thailand')
 
@@ -151,21 +201,24 @@ class FilterBar(ttk.Frame):
         # unit
         unit_arr = ('Death rate', 'Total deaths')
         self.unit_label = tk.Label(self, text='Unit', **n_font, **color)
-        self.unit_cbb = ttk.Combobox(self, textvariable=self.unit, values=unit_arr, state='readonly')
+        self.unit_cbb = ttk.Combobox(self, textvariable=self.unit,
+                                     values=unit_arr, state='readonly')
         self.unit_cbb.bind('<<ComboboxSelected>>', self.handle_unit_select)
         self.unit.set("Death rate")
 
         # mode
         mode_arr = ("Standard", "Top Rankings")
         self.mode_label = tk.Label(self, text='Mode', **n_font, **color)
-        self.mode_cbb = ttk.Combobox(self, textvariable=self.mode, values=mode_arr, state='readonly')
+        self.mode_cbb = ttk.Combobox(self, textvariable=self.mode,
+                                     values=mode_arr, state='readonly')
         self.mode_cbb.bind('<<ComboboxSelected>>', self.handle_mode_select)
         self.mode.set("Standard")
 
         # graph
         graph_arr = ("Line Graph", "Bar Graph", "Histogram")
         self.grph_label = tk.Label(self, text='Graph', **n_font, **color)
-        self.grph_cbb = ttk.Combobox(self, textvariable=self.graph, values=graph_arr, state='readonly')
+        self.grph_cbb = ttk.Combobox(self, textvariable=self.graph,
+                                     values=graph_arr, state='readonly')
         self.grph_cbb.bind('<<ComboboxSelected>>', self.handle_graph_select)
         self.graph.set("Line Graph")
 
@@ -215,6 +268,9 @@ class FilterBar(ttk.Frame):
 
 
 class TypeSelection(ttk.Frame):
+    """Type selection for users to select which subset of people
+    they want to view which is a part of the filter bar.
+    """
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.controller = controller
@@ -222,7 +278,8 @@ class TypeSelection(ttk.Frame):
         self.avail_age = ('Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years', 'All')
         self.avail_type = ('pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other', 'All')
         self.age_list = ('age_0_4', 'age_5_14', 'age_15_49', 'age_50_69', 'age_70', 'All')
-        self.type_list = ('type_pedestrian', 'type_motorvehicle', 'type_motorcyclist', 'type_cyclist', 'type_other', 'All')
+        self.type_list = ('type_pedestrian', 'type_motorvehicle', 'type_motorcyclist',
+                          'type_cyclist', 'type_other', 'All')
         self.cur_list = self.avail_age
         self.cur_list_use = self.age_list
         self.type = tk.StringVar()
@@ -236,10 +293,16 @@ class TypeSelection(ttk.Frame):
         self.init_components()
 
     def handle_select_all(self, *args):
+        """
+        Deselect other options when users select all options.
+        """
         for ckb in self.checkbutton[:-1]:
             ckb.deselect()
 
     def handle_combobox(self, *args):
+        """
+        Switch the label of the options according to the type users chose.
+        """
         if self.type.get() == 'by age':
             self.cur_list = self.avail_age
             self.cur_list_use = self.age_list
@@ -253,9 +316,15 @@ class TypeSelection(ttk.Frame):
         self.ckb6.select()
 
     def handle_select_normal(self, *args):
+        """
+        Deselect all option when users select other options.
+        """
         self.ckb6.deselect()
 
     def init_components(self):
+        """
+        Initialise the components and layout for the UI.
+        """
         n_font = {'font': ('Arial', 14)}
         s_font = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
@@ -268,7 +337,8 @@ class TypeSelection(ttk.Frame):
 
         # combobox
         type_arr = ('by age', 'by vehicle type')
-        self.combobox = ttk.Combobox(self, textvariable=self.type, values=type_arr, state='readonly')
+        self.combobox = ttk.Combobox(self, textvariable=self.type,
+                                     values=type_arr, state='readonly')
         self.combobox.bind('<<ComboboxSelected>>', self.handle_combobox)
         self.type.set('by age')
 
@@ -281,7 +351,9 @@ class TypeSelection(ttk.Frame):
         self.ckb6 = tk.Checkbutton(self)
         self.checkbutton = [self.ckb1, self.ckb2, self.ckb3, self.ckb4, self.ckb5, self.ckb6]
         for i in range(len(self.checkbutton)):
-            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i], onvalue=i, offvalue=-1, background='white', width=5, anchor=tk.W, command=self.handle_select_normal, **s_font)
+            self.checkbutton[i].configure(text=self.cur_list[i], variable=self.sel_list[i],
+                                          onvalue=i, offvalue=-1, background='white', width=5,
+                                          anchor=tk.W, command=self.handle_select_normal, **s_font)
         self.ckb6.configure(command=self.handle_select_all)
 
         # grid
@@ -306,6 +378,11 @@ class TypeSelection(ttk.Frame):
         self.ckb6.select()
 
     def get_array(self):
+        """
+        Return a list (array) according to which check buttons is chosen.
+
+        :return: list, array attribute of the GraphGenerator
+        """
         graph = self.controller.generator.graph
         sel_val = list(map(lambda x: x.get(), self.sel_list[:-1]))
         if -1 not in sel_val and graph != 'Bar Graph':

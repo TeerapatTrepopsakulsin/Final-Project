@@ -7,6 +7,7 @@ from sub_component import Keypad, FilterBar
 
 
 class Storytelling(ttk.Frame):
+    """Storytelling page where users can view graphs and statistics."""
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
@@ -14,7 +15,10 @@ class Storytelling(ttk.Frame):
         self.year = tk.StringVar()
         self.init_components()
 
-    def handle_select_year(self, event: tk.Event):
+    def handle_select_year(self, *args):
+        """
+        Change the histogram and descriptive statistics after users select year.
+        """
         sticky = {'sticky': tk.NSEW}
         pad = {'padx': 10, 'pady': 5}
 
@@ -29,6 +33,9 @@ class Storytelling(ttk.Frame):
         self.des_stat.grid(row=3, column=0, columnspan=2, **sticky, **pad)
 
     def handle_select_graph(self, event: tk.Event):
+        """
+        Change the graph after users select which graph to view.
+        """
         sticky = {'sticky': tk.NSEW}
         pad = {'padx': 10, 'pady': 5}
 
@@ -41,6 +48,9 @@ class Storytelling(ttk.Frame):
         self.graph.grid(row=0, column=2, rowspan=3, **sticky, **pad)
 
     def init_components(self):
+        """
+        Initialise the components and layout for the page UI.
+        """
         options = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
         pad = {'padx': 10, 'pady': 5}
@@ -49,7 +59,7 @@ class Storytelling(ttk.Frame):
         self.hist, self.graph, self.des_stat, graph_arr = self.controller.initialise_stt(self)
 
         # combobox
-        year_arr = list(map(lambda x: str(x), range(1990, 2020)))
+        year_arr = list(map(str, range(1990, 2020)))
 
         self.combobox = ttk.Combobox(self, textvariable=self.year,
                                      values=year_arr, state='readonly')
@@ -84,6 +94,9 @@ class Storytelling(ttk.Frame):
 
 
 class DataExploration(ttk.Frame):
+    """Data Exploration page where users can alter parameter values,
+    filter data, or manipulate the view.
+    """
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
@@ -91,6 +104,10 @@ class DataExploration(ttk.Frame):
         self.init_components()
 
     def handle_generate(self, *args):
+        """
+        Change the graph to the new filtered graph according to the users
+        after pressed Generate.
+        """
         sticky = {'sticky': tk.NSEW}
         pad = {'padx': 10, 'pady': 5}
 
@@ -101,6 +118,9 @@ class DataExploration(ttk.Frame):
         self.graph.grid(row=0, column=0, **sticky, **pad)
 
     def init_components(self):
+        """
+        Initialise the components and layout for the page UI.
+        """
         sticky = {'sticky': tk.NSEW}
         pad = {'padx': 10, 'pady': 5}
 
@@ -122,12 +142,16 @@ class DataExploration(ttk.Frame):
 
 
 class Dataset(ttk.Frame):
+    """Dataset page where users can view dataset."""
     def __init__(self, parent, controller: Controller, **kwargs):
         super().__init__(parent, **kwargs)
         self.controller = copy.deepcopy(controller)
         self.init_components()
 
     def init_components(self):
+        """
+        Initialise the components and layout for the page UI.
+        """
         sticky = {'sticky': tk.NSEW}
 
         # treeview
