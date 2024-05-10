@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from enum import Enum
 from abc import ABC
 
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 DF = pd.read_csv("data.csv")
@@ -53,7 +52,8 @@ class GraphGenerator(ABC):
         for item in kwargs:
             if '_GraphGenerator__' + item not in self.__dict__:
                 raise ValueError(f'unknown option "-{item}"')
-            self.__dict__.update({'_GraphGenerator__' + item: kwargs[item]})
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def set_all(self):
         self.og_df = DF
