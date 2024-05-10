@@ -1,4 +1,4 @@
-"""Pages module"""
+"""Pages module for each page in the UI."""
 import copy
 import tkinter as tk
 from tkinter import ttk
@@ -43,7 +43,6 @@ class Storytelling(ttk.Frame):
     def init_components(self):
         options = {'font': ('Arial', 11)}
         sticky = {'sticky': tk.NSEW}
-        color = {'fg': "Black", 'bg': 'white'}
         pad = {'padx': 10, 'pady': 5}
 
         # init graph
@@ -52,7 +51,8 @@ class Storytelling(ttk.Frame):
         # combobox
         year_arr = list(map(lambda x: str(x), range(1990, 2020)))
 
-        self.combobox = ttk.Combobox(self, textvariable=self.year, values=year_arr, state='readonly')
+        self.combobox = ttk.Combobox(self, textvariable=self.year,
+                                     values=year_arr, state='readonly')
 
         self.combobox.bind('<<ComboboxSelected>>', self.handle_select_year)
 
@@ -65,7 +65,8 @@ class Storytelling(ttk.Frame):
         self.keypad.bind('<Button>', self.handle_select_graph)
 
         # label
-        self.label = tk.Label(self, text='Annual Death Statistic', anchor='w',  font=("Arial", 14, "bold"))
+        self.label = tk.Label(self, text='Annual Death Statistic',
+                              anchor='w',  font=("Arial", 14, "bold"))
 
         # grid
         self.hist.grid(row=2, column=0, columnspan=2, **sticky, **pad)
@@ -87,7 +88,6 @@ class DataExploration(ttk.Frame):
         super().__init__(parent, **kwargs)
         self.parent = parent
         self.controller = copy.deepcopy(controller)
-        self.year = tk.StringVar()
         self.init_components()
 
     def handle_generate(self, *args):
@@ -99,7 +99,6 @@ class DataExploration(ttk.Frame):
 
         # re-grid
         self.graph.grid(row=0, column=0, **sticky, **pad)
-
 
     def init_components(self):
         sticky = {'sticky': tk.NSEW}
@@ -147,7 +146,3 @@ class Dataset(ttk.Frame):
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-
-
-if __name__ == '__main__':
-    import main

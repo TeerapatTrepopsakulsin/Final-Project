@@ -378,7 +378,3 @@ class Keypad(ttk.Frame):
         """Apply configuration settings to all buttons."""
         for button in self.buttons:
             button.configure(cnf, **kwargs)
-
-
-if __name__ == '__main__':
-    import main

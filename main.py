@@ -5,8 +5,8 @@ from controller import Controller
 
 
 generator = GraphGenerator()
-catalog = DefaultGraphCatalog
+Catalog = DefaultGraphCatalog
 dataset_treeview = DatasetTreeview()
-controller = Controller(generator, catalog, dataset_treeview)
+controller = Controller(generator, Catalog, dataset_treeview)
 ui = GraphUI(controller)
 ui.run()

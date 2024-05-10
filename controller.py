@@ -1,5 +1,4 @@
 """Controller module."""
-import tkinter as tk
 from tkinter import ttk
 from graph_generator import GraphGenerator, DefaultGraphCatalog, DatasetTreeview
 from entity import Entity
@@ -86,7 +85,3 @@ class Controller:
     def get_dataset_treeview(self, frame: ttk.Frame):
         tree = self.data_tree.get_treeview(frame)
         return tree
-
-
-if __name__ == '__main__':
-    import main

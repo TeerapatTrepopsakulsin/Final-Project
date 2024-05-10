@@ -1,20 +1,20 @@
-from pages import Storytelling, DataExploration, Dataset
+"""Main UI module for application."""
 import tkinter as tk
 from tkinter import ttk
 from controller import Controller
+from pages import Storytelling, DataExploration, Dataset
 
 
 class GraphUI(tk.Tk):
+    """UI class"""
     def __init__(self, controller: Controller):
         super().__init__()
         self.title("Road incident deaths")
         self.controller = controller
         self.init_components()
 
-    def handle_event(self, event: tk.Event):
-        pass
-
     def init_components(self):
+        """Create components and layout the UI."""
         sticky = {'sticky': tk.NSEW}
 
         # menubar
@@ -52,7 +52,3 @@ class GraphUI(tk.Tk):
     def run(self):
         """start the app, wait for events"""
         self.mainloop()
-
-
-if __name__ == '__main__':
-    import main

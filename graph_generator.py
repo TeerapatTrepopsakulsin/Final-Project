@@ -6,8 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from enum import Enum
 from abc import ABC
-
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 DF = pd.read_csv("data.csv")
 DF_OC = pd.read_csv("data_only_country.csv")
@@ -614,7 +614,6 @@ class DefaultGraph:
 
 
 class DefaultGraphCatalog(Enum):
-
     SPD_DRAT = {'label': 'Speed limits/Death rate', 'func': DefaultGraph().graph2}
     SPD_RR_DRAT = {'label': 'Speed limits (Rural)/Death rate', 'func': DefaultGraph().graph2_rural}
     SPD_UB_DRAT = {'label': 'Speed limits (Urban)/Death rate', 'func': DefaultGraph().graph2_urban}
@@ -640,11 +639,14 @@ class DefaultGraphCatalog(Enum):
 
 class DatasetTreeview:
     def __init__(self):
-        self.df = copy.deepcopy(DF).rename(columns={'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
-                    'age_50_69': '50-69 years', 'age_70': '70+ years', 'type_pedestrian': 'pedestrian',
-                    'type_motorvehicle': 'motor vehicle', 'type_motorcyclist': 'motorcyclist',
-                    'type_cyclist': 'cyclist', 'type_other': 'other', 'death_rate': 'death rate',
-                    'death_total': 'total deaths', 'urban_speed_limit': 'Urban speed limits', 'rural_speed_limit': 'Rural speed limits', 'seatbelt_law': 'Seat-belt law'})
+        self.df = copy.deepcopy(DF).rename(
+            columns={'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
+                     'age_50_69': '50-69 years', 'age_70': '70+ years', 'type_pedestrian': 'pedestrian',
+                     'type_motorvehicle': 'motor vehicle', 'type_motorcyclist': 'motorcyclist',
+                     'type_cyclist': 'cyclist', 'type_other': 'other', 'death_rate': 'death rate',
+                     'death_total': 'total deaths', 'urban_speed_limit': 'Urban speed limits',
+                     'rural_speed_limit': 'Rural speed limits', 'seatbelt_law': 'Seat-belt law'})
+
     def get_treeview(self, frame: ttk.Frame):
         column = list(self.df)
         tree = ttk.Treeview(frame, selectmode="extended")
@@ -660,7 +662,3 @@ class DatasetTreeview:
             tree.insert('', tk.END, values=row)
 
         return tree
-
-
-if __name__ == '__main__':
-    import main
