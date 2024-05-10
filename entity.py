@@ -1,7 +1,14 @@
+"""Enum class containing list of entities."""
 from enum import Enum
 
 
 class Entity(Enum):
+    """
+    List of entities
+    ALL: all entities
+    ONLY_COUNTRY: all countries
+    NOT_COUNTRY: exclude countries
+    """
     ALL = ['Afghanistan',
            'Albania',
            'Algeria',
