@@ -27,6 +27,7 @@ class GraphGenerator(ABC):
         self.__mode = 'standard'
         self.__graph = 'Histogram'
         self.__og_df = DF_OC
+        self.__og_df_name = "Only Country"
 
     def get_generator(self) -> 'GraphGenerator':
         attr = copy.copy(self.__dict__)
@@ -58,9 +59,11 @@ class GraphGenerator(ABC):
 
     def set_all(self):
         self.og_df = DF
+        self.og_df_name = 'All'
 
     def set_only_country(self):
         self.og_df = DF_OC
+        self.og_df_name = 'Only country'
 
     @property
     def start_year(self):
@@ -153,6 +156,14 @@ class GraphGenerator(ABC):
     def og_df(self, df):
         self.__og_df = df
 
+    @property
+    def og_df_name(self):
+        return self.__og_df_name
+
+    @og_df_name.setter
+    def og_df_name(self, name):
+        self.__og_df_name = name
+
 
 class LinegraphGenerator(GraphGenerator):
     def __init__(self, **kwargs):
@@ -239,7 +250,6 @@ class BargraphGenerator(GraphGenerator):
         colour_arr = ['royalblue', 'orange', 'forestgreen', 'firebrick', 'mediumpurple']
         for i in range(len(en_arr)):
             br = [x + i*bar_width for x in np.arange(len(type_arr))]
-            print(br)
             en = groupby_df.iloc[i]
             clr = colour_arr[i]
             plt.bar(br, en, color=clr, width=bar_width, label=en_arr[i])
@@ -324,12 +334,14 @@ class StatGenerator(GraphGenerator):
 
         for column in table["column"]:
             table.heading(column, text=column)
-            table.column(column, anchor=tk.CENTER)
+            table.column(column, anchor=tk.CENTER, width=10)
 
         des_stat_list = stat_df.describe().reset_index().to_numpy().tolist()
 
         for row in des_stat_list:
             table.insert("", "end", values=row)
+
+        table.configure(height=10)
 
         return table
 
@@ -344,6 +356,11 @@ class DataframeGenerator(GraphGenerator):
 
     def generate(self, frame: ttk.Frame, size, process="normal"):
         df = copy.deepcopy(self.og_df)
+        if process == "normal":
+            new_df = df[df['Year'] == self.start_year]
+            gen_df = self.initialise(new_df)
+            return gen_df
+
         new_df = df[(df['Year'] >= self.start_year) &
                     (df['Year'] <= self.end_year)]
 
@@ -448,7 +465,7 @@ class DefaultGraph:
 
         plt.scatter(rural, death_rate, c='red')
         plt.title('Correlation between death rate and speed limits in rural')
-        plt.xlabel('Speed limit (km/h)')
+        plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {rural.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
 
@@ -468,7 +485,7 @@ class DefaultGraph:
 
         plt.scatter(urban, death_rate, c='blue')
         plt.title('Correlation between death rate and speed limits in urban')
-        plt.xlabel('Speed limit (km/h)')
+        plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {urban.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
 
