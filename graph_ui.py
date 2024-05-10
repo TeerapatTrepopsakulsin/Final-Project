@@ -1,7 +1,6 @@
-from pages import *
+from pages import Storytelling, DataExploration, Dataset
 import tkinter as tk
 from tkinter import ttk
-from winsound import MessageBeep, SND_NOWAIT
 from controller import Controller
 
 
@@ -30,16 +29,19 @@ class GraphUI(tk.Tk):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, **sticky)
 
-        ## create frames
+        # create frames
         frame1 = Storytelling(self.notebook, self.controller)
         frame2 = DataExploration(self.notebook, self.controller)
+        frame3 = Dataset(self.notebook, self.controller)
 
         frame1.grid(row=0, column=0, **sticky)
         frame2.grid(row=0, column=0, **sticky)
+        frame3.grid(row=0, column=0, **sticky)
 
-        ## add frames to notebook
+        # add frames to notebook
         self.notebook.add(frame1, text='Storytelling')
         self.notebook.add(frame2, text='Data Exploration')
+        self.notebook.add(frame3, text='Dataset')
 
         # fill the window
         for row in range(1):

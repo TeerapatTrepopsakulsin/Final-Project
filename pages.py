@@ -121,5 +121,33 @@ class DataExploration(ttk.Frame):
         self.columnconfigure(0, weight=1)
 
 
+class Dataset(ttk.Frame):
+    def __init__(self, parent, controller: Controller, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.controller = controller
+        self.init_components()
+
+    def init_components(self):
+        sticky = {'sticky': tk.NSEW}
+
+        # treeview
+        self.treeview = self.controller.get_dataset_treeview(self)
+
+        # scrollbar
+        self.y_scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.treeview.yview)
+        self.treeview.configure(yscroll=self.y_scrollbar.set)
+        self.x_scrollbar = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.treeview.xview)
+        self.treeview.configure(xscroll=self.x_scrollbar.set)
+
+
+        # grid
+        self.treeview.grid(row=0, column=0, **sticky)
+        self.y_scrollbar.grid(row=0, column=1, sticky=tk.NS)
+        self.x_scrollbar.grid(row=1, column=0, sticky=tk.EW)
+
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+
 if __name__ == '__main__':
     import main

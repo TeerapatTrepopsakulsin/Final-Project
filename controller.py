@@ -1,14 +1,15 @@
 """Controller module."""
 import tkinter as tk
 from tkinter import ttk
-from graph_generator import GraphGenerator, DefaultGraphCatalog
+from graph_generator import GraphGenerator, DefaultGraphCatalog, DatasetTreeview
 from entity import Entity
 
 
 class Controller:
-    def __init__(self, graph_generator: GraphGenerator, default_graph: type[DefaultGraphCatalog]):
+    def __init__(self, graph_generator: GraphGenerator, default_graph: type[DefaultGraphCatalog], data_tree: DatasetTreeview):
         self.catalog = default_graph
         self.generator = graph_generator
+        self.data_tree = data_tree
 
     def initialise_stt(self, frame: ttk.Frame):
         # initialise the generator
@@ -81,6 +82,10 @@ class Controller:
         graph = generator.generate(frame, size)
 
         return graph
+
+    def get_dataset_treeview(self, frame: ttk.Frame):
+        tree = self.data_tree.get_treeview(frame)
+        return tree
 
 
 if __name__ == '__main__':

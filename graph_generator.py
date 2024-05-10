@@ -1,5 +1,3 @@
-import sys
-import os
 import copy
 from tkinter import ttk
 import tkinter as tk
@@ -64,6 +62,16 @@ class GraphGenerator(ABC):
     def set_only_country(self):
         self.og_df = DF_OC
         self.og_df_name = 'Only country'
+
+    def array_to_label(self):
+        to_label = {'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
+                    'age_50_69': '50-69 years', 'age_70': '70+ years', 'type_pedestrian': 'pedestrian',
+                    'type_motorvehicle': 'motor vehicle', 'type_motorcyclist': 'motorcyclist',
+                    'type_cyclist': 'cyclist', 'type_other': 'other', 'death_rate': 'death rate',
+                    'death_total': 'total deaths'}
+
+        label_list = list(map(lambda x: to_label[x], copy.deepcopy(self.array)))
+        return label_list
 
     @property
     def start_year(self):
@@ -229,7 +237,6 @@ class BargraphGenerator(GraphGenerator):
             self.process = 'top5'
 
     def generate(self, frame: ttk.Frame, size, process="entity"):
-        # TODO
         if process != "entity" and process != "top5":
             raise ValueError(f'bar graph generating process can only be "entity", "top5"; not {process}')
 
@@ -249,7 +256,7 @@ class BargraphGenerator(GraphGenerator):
         # Make the plot
         colour_arr = ['royalblue', 'orange', 'forestgreen', 'firebrick', 'mediumpurple']
         for i in range(len(en_arr)):
-            br = [x + i*bar_width for x in np.arange(len(type_arr))]
+            br = [x + i * bar_width for x in np.arange(len(type_arr))]
             en = groupby_df.iloc[i]
             clr = colour_arr[i]
             plt.bar(br, en, color=clr, width=bar_width, label=en_arr[i])
@@ -261,7 +268,7 @@ class BargraphGenerator(GraphGenerator):
         plt.ylabel(f'{to_label[self.unit][1]}')
         plt.title(f'Average annual {to_label[self.unit][0]} in {self.start_year} - {self.end_year}')
         plt.grid()
-        plt.xticks([r + 0.5*(len(en_arr)-1)*bar_width for r in range(len(type_arr))], self.array)
+        plt.xticks([r + 0.5 * (len(en_arr) - 1) * bar_width for r in range(len(type_arr))], self.array_to_label())
         plt.tick_params(axis='x', grid_linewidth=0)
         plt.legend(title='Entity')
 
@@ -631,7 +638,28 @@ class DefaultGraphCatalog(Enum):
                 return item.value['func']
 
 
-# TODO # treeview of dataset
+class DatasetTreeview:
+    def __init__(self):
+        self.df = copy.deepcopy(DF).rename(columns={'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
+                    'age_50_69': '50-69 years', 'age_70': '70+ years', 'type_pedestrian': 'pedestrian',
+                    'type_motorvehicle': 'motor vehicle', 'type_motorcyclist': 'motorcyclist',
+                    'type_cyclist': 'cyclist', 'type_other': 'other', 'death_rate': 'death rate',
+                    'death_total': 'total deaths', 'urban_speed_limit': 'Urban speed limits', 'rural_speed_limit': 'Rural speed limits', 'seatbelt_law': 'Seat-belt law'})
+    def get_treeview(self, frame: ttk.Frame):
+        column = list(self.df)
+        tree = ttk.Treeview(frame, selectmode="extended")
+        tree["show"] = "headings"
+
+        tree["columns"] = column
+        for col in column:
+            tree.column(col, anchor="w")
+            tree.heading(col, text=col)
+
+        for i in range(len(self.df)):
+            row = self.df.iloc[i].tolist()
+            tree.insert('', tk.END, values=row)
+
+        return tree
 
 
 if __name__ == '__main__':
