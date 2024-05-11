@@ -1,4 +1,5 @@
 """Sub-component module"""
+import time
 import tkinter as tk
 from tkinter import ttk
 from controller import Controller
@@ -132,6 +133,31 @@ class FilterBar(ttk.Frame):
         unit = to_unit[unit_label]
         self.controller.generator.setup(unit=unit)
 
+        self.handle_select_death_rate()
+
+    def handle_select_death_rate(self, *args):
+        """
+        Change values in entity combobox in case of
+        the selected entities have no population value.
+        """
+        unit_label = self.unit.get()
+        g_array = self.type_sel.get_array()
+
+        if unit_label == 'Death rate' and g_array != ['All']:
+            pop_list = self.controller.get_entity_list('POPULATION')
+            self.en1_cbb.configure(values=pop_list)
+            self.en2_cbb.configure(values=pop_list)
+            if self.entity1.get() not in pop_list:
+                self.entity1.set('World')
+                self.controller.generator.setup(entity1='World')
+            if self.entity2.get() not in pop_list:
+                self.entity2.set('Thailand')
+                self.controller.generator.setup(entity1='Thailand')
+        else:
+            all_list = self.controller.get_entity_list()
+            self.en1_cbb.configure(values=all_list)
+            self.en2_cbb.configure(values=all_list)
+
     def handle_generate(self, *args):
         """
         When users press the generate button,
@@ -184,7 +210,7 @@ class FilterBar(ttk.Frame):
         self.en1_label = tk.Label(self, text='Entity 1:', anchor=tk.W, **s_font, **color)
         self.en2_label = tk.Label(self, text='Entity 2:', anchor=tk.W, **s_font, **color)
 
-        en_arr = self.controller.get_entity_list()
+        en_arr = self.controller.get_entity_list('POPULATION')
         self.en1_cbb = ttk.Combobox(self, textvariable=self.entity1,
                                     values=en_arr, state='readonly', width=33)
         self.en1_cbb.bind('<<ComboboxSelected>>', self.handle_entity1_select)
@@ -197,6 +223,7 @@ class FilterBar(ttk.Frame):
 
         # type selection
         self.type_sel = TypeSelection(self, self.controller)
+        self.type_sel.bind('<Leave>', self.handle_select_death_rate)
 
         # unit
         unit_arr = ('Death rate', 'Total deaths')
@@ -298,6 +325,7 @@ class TypeSelection(ttk.Frame):
         """
         for ckb in self.checkbutton[:-1]:
             ckb.deselect()
+        self.ckb6.select()
 
     def handle_combobox(self, *args):
         """
@@ -320,6 +348,8 @@ class TypeSelection(ttk.Frame):
         Deselect all option when users select other options.
         """
         self.ckb6.deselect()
+        if not self.get_array():
+            self.ckb6.select()
 
     def init_components(self):
         """
