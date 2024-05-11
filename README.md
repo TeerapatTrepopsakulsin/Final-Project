@@ -20,12 +20,12 @@ The data on the Storytelling page will be displayed as descriptive statistics, g
    
 **DataExploration**
    1. Users can select (filter) a duration from 1990 to 2019 to show the distribution of that specific duration, for example, starting in 2000 and ending in 2005.
-   2. Users can filter the country they want to conclude in the graph.
+   2. Users can filter the entities they want to conclude in the graph.
    3. Users can filter the type of death they want to conclude in the graph, for example, deaths of people between 50-69 years old and children between 0-4 years old, or deaths of people riding a bicycle. (Cannot filter both age and vehicle at the same time)
-   4. Users can switch the graph unit between “Total death” and “Death rate”, and then the graph will visualise as the users want. The population dataset will be used specifically to calculate this feature. “Total death” means that the unit will be people, while “Death rate” means that the unit will be people per 100,000 people.
-   5. Users can switch the mode between “Standard” and “Top ranking”, and then the graph will visualise as the users want. “Standard” will show the average deaths under filtered conditions (at most 2 lines), while “Top ranking” will show only each death data of the top 5 countries with the most deaths.
+   4. Users can switch the graph unit between “Total deaths” and “Death rate”, and then the graph will visualise as the users want. “Total death” means that the unit will be people, while “Death rate” means that the unit will be people per 100,000 people.
+   5. Users can switch the mode between “Standard” and “Top rankings”, and then the graph will visualise as the users want. “Standard” will show the average deaths under filtered conditions (at most 2 entities), while “Top rankings” will show only each death data of the top 5 countries with the most deaths/death rate.
    6. Users can select the type of graph they want, like a bar graph or a histogram, but some features might be disabled for the histogram.
-   7. After selecting all of the wanted attributes, press “confirm” to generate the wanted graph.
+   7. After selecting all of the wanted attributes, press “GENERATE” to generate the wanted graph.
 
 **Dataset**
    1. Users can view and scroll the dataset as they want.
