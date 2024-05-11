@@ -520,7 +520,7 @@ class DefaultGraph:
                    ylabel='Average death rate (deaths per 100,000 people)',
                    color=colour, rot=0, grid=True)
         plt.tick_params(axis='x', grid_linewidth=0)
-        plt.title('Average death rate of countries with and without seat-belt law')
+        plt.title('Average death rate from 1990-2019 of countries with and without seat-belt law')
         plt.tight_layout()
 
         # Tkinter canvas that contain the figure
@@ -558,7 +558,7 @@ class DefaultGraph:
 
         plt.scatter(rural, death_rate, c='red')
         plt.scatter(urban, death_rate, c='blue')
-        plt.title('Correlation between death rate and speed limits')
+        plt.title('Correlation between speed limits and average annual death rate throughout 1990-2019')
         plt.xlabel('Speed limit (km/h)')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.legend(['rural', 'urban'])
@@ -586,7 +586,7 @@ class DefaultGraph:
         rural, death_rate, urban = self.graph2_setup()
 
         plt.scatter(rural, death_rate, c='red')
-        plt.title('Correlation between death rate and speed limits in rural')
+        plt.title('Correlation between speed limits in rural and average annual death rate throughout 1990-2019')
         plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {rural.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
@@ -613,7 +613,7 @@ class DefaultGraph:
         rural, death_rate, urban = self.graph2_setup()
 
         plt.scatter(urban, death_rate, c='blue')
-        plt.title('Correlation between death rate and speed limits in urban')
+        plt.title('Correlation between speed limits in urban and average annual death rate throughout 1990-2019')
         plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {urban.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
@@ -647,7 +647,7 @@ class DefaultGraph:
         g3_df = g3_df.groupby(['Entity'])[age_arr].mean().mean()
         g3_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%',
                        textprops={'color': 'black'}, pctdistance=1.15, labels=None)
-        plt.title('Deaths percents for different age ranges')
+        plt.title('Deaths percents for different age ranges throughout 1990-2019')
         plt.legend(['Under 5', '5-14 years', '15-49 years',
                     '50-69 years', '70+ years'], bbox_to_anchor=(1, 0.5))
         plt.tight_layout()
@@ -681,7 +681,7 @@ class DefaultGraph:
         g4_df = g4_df.groupby(['Entity'])[type_arr].mean().mean()
         g4_df.plot.pie(startangle=90, counterclock=False, autopct='%1.2f%%',
                        textprops={'color': 'black'}, pctdistance=1.15, labels=None)
-        plt.title('Deaths percents for different types')
+        plt.title('Deaths percents for different types throughout 1990-2019')
         plt.legend(['pedestrian', 'motor vehicle', 'motorcyclist',
                     'cyclist', 'other'], bbox_to_anchor=(1, 0.5))
         plt.tight_layout()
@@ -715,7 +715,7 @@ class DefaultGraph:
         g5_df = g5_df.groupby(['Entity'])[age_arr].mean().sum()
         g5_df.plot.bar(rot=0, grid=True)
         plt.tick_params(axis='x', grid_linewidth=0)
-        plt.title('Average annual global death rate for each age range')
+        plt.title('Average annual global death rate throughout 1990-2019 for each age range')
         plt.xlabel('Age')
         plt.ylabel('Death rate (deaths per 100,000 people)')
         plt.tight_layout()
@@ -750,7 +750,7 @@ class DefaultGraph:
         g6_df = g6_df.groupby(['Entity'])[type_arr].mean().sum()
         g6_df.plot.bar(rot=0, grid=True)
         plt.tick_params(axis='x', grid_linewidth=0)
-        plt.title('Average annual global death rate for each type')
+        plt.title('Average annual global death rate throughout 1990-2019 for each type')
         plt.xlabel('Type')
         plt.ylabel('Death rate (deaths per 100,000 people)')
         plt.tight_layout()
