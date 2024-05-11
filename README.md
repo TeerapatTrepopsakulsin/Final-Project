@@ -1,8 +1,10 @@
 # Road incident deaths
 
 ## Description
-The GUI application displays global road incident death statistics as information
-permanently for the first page (Storytelling). There will be another page (Data Exploration) where users can visualise and interact with graphs for information (age, type, year, etc.) which will be displayed on the screen differently according to the selected value/hue.
+The GUI application created using Tkinter and Python to allows a user to visualise, analyse, and interact with global road incident deaths data to obtain useful knowledge or insights.
+The application contains 3 pages, a Storytelling page, a DataExploration page, and a Dataset page.
+
+The data on the Storytelling page will be displayed as descriptive statistics, graphs, and charts, with little interactivity. On the DataExploration page, the user can fully alter the view and interact with graphs to gain their interest information (age, type, year, etc.), which will be displayed differently depending on the filtered parameters after a graph is generated. Lastly, the Dataset page displays the dataset used for calculating and generating the graph for this project. (Road_incident_deaths.csv [Check out my data processing](https://github.com/TeerapatTrepopsakulsin/Year1-Project/wiki/Data-Processing)).
 
 ## Application UI (MS Windows)
 |Page| Application UI  |
