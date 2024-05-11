@@ -1,7 +1,7 @@
 # Road incident deaths
 
 ## Description
-The GUI application was created using Tkinter and Python to allow users to visualise, analyse, and interact with global road incident deaths in 1990-2019 data  to obtain useful knowledge or insights.
+The GUI application was created using Tkinter and Python to allow users to visualise, analyse, and interact with global road incident deaths in 1990-2019 data to obtain useful knowledge or insights.
 The application contains 3 pages, a Storytelling page, a DataExploration page, and a Dataset page.
 
 The data on the Storytelling page will be displayed as descriptive statistics, graphs, and charts, with little interactivity. On the DataExploration page, the user can fully alter the view and interact with graphs to gain their interest information (age, type, year, etc.), which will be displayed differently depending on the filtered parameters after a graph is generated. Lastly, the Dataset page displays the dataset used for calculating and generating the graph for this project. (Road_incident_deaths.csv [Check out my data processing](https://github.com/TeerapatTrepopsakulsin/Year1-Project/wiki/Data-Processing)).
@@ -12,6 +12,23 @@ The data on the Storytelling page will be displayed as descriptive statistics, g
 |Storytelling|![Storytelling](https://github.com/TeerapatTrepopsakulsin/Year1-Project/blob/main/screenshots/data/Storytelling.png)|
 |DataExploration|![DataExploration](https://github.com/TeerapatTrepopsakulsin/Year1-Project/blob/main/screenshots/DataExploration.png)|
 |Dataset|![Dataset page](https://github.com/TeerapatTrepopsakulsin/Year1-Project/blob/main/screenshots/Dataset.png)|
+
+## Interaction
+**Storytelling**
+   1. Users can select a year to view a histogram and descriptive statistics of road incident death rate data in that year. (It doesn't affect the graph on the right side.)
+   2. Users can pick a graph to display from the catalog by pressing the button.
+   
+**DataExploration**
+   1. Users can select (filter) a duration from 1990 to 2019 to show the distribution of that specific duration, for example, starting in 2000 and ending in 2005.
+   2. Users can filter the country they want to conclude in the graph.
+   3. Users can filter the type of death they want to conclude in the graph, for example, deaths of people between 50-69 years old and children between 0-4 years old, or deaths of people riding a bicycle. (Cannot filter both age and vehicle at the same time)
+   4. Users can switch the graph unit between “Total death” and “Death rate”, and then the graph will visualise as the users want. The population dataset will be used specifically to calculate this feature. “Total death” means that the unit will be people, while “Death rate” means that the unit will be people per 100,000 people.
+   5. Users can switch the mode between “Standard” and “Top ranking”, and then the graph will visualise as the users want. “Standard” will show the average deaths under filtered conditions (at most 2 lines), while “Top ranking” will show only each death data of the top 5 countries with the most deaths.
+   6. Users can select the type of graph they want, like a bar graph or a histogram, but some features might be disabled for the histogram.
+   7. After selecting all of the wanted attributes, press “confirm” to generate the wanted graph.
+
+**Dataset**
+   1. Users can view and scroll the dataset as they want.
 
 ## Python files
 |File| Usage |
