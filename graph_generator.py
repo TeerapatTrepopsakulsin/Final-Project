@@ -558,7 +558,8 @@ class DefaultGraph:
 
         plt.scatter(rural, death_rate, c='red')
         plt.scatter(urban, death_rate, c='blue')
-        plt.title('Correlation between speed limits and average annual death rate throughout 1990-2019')
+        plt.title('Correlation between speed limits and '
+                  'average annual death rate throughout 1990-2019')
         plt.xlabel('Speed limit (km/h)')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.legend(['rural', 'urban'])
@@ -586,7 +587,8 @@ class DefaultGraph:
         rural, death_rate, urban = self.graph2_setup()
 
         plt.scatter(rural, death_rate, c='red')
-        plt.title('Correlation between speed limits in rural and average annual death rate throughout 1990-2019')
+        plt.title('Correlation between speed limits in rural and '
+                  'average annual death rate throughout 1990-2019')
         plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {rural.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
@@ -613,7 +615,8 @@ class DefaultGraph:
         rural, death_rate, urban = self.graph2_setup()
 
         plt.scatter(urban, death_rate, c='blue')
-        plt.title('Correlation between speed limits in urban and average annual death rate throughout 1990-2019')
+        plt.title('Correlation between speed limits in urban and '
+                  'average annual death rate throughout 1990-2019')
         plt.xlabel(f'Speed limit (km/h)\nCorrelation coefficient: {urban.corr(death_rate)}')
         plt.ylabel('Average death rate (deaths per 100,000 people)')
         plt.tight_layout()
@@ -761,11 +764,6 @@ class DefaultGraph:
 
         plt.close(fig)
         return canvas.get_tk_widget()
-
-    def graph7(self):
-        # TODO
-        # Linegraph death rate/year (speed limit range as hue)
-        pass
 
     def __del__(self):
         pass
