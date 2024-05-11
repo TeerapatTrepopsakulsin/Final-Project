@@ -30,7 +30,7 @@ class Controller:
         self.generator.set_only_country()
 
         # generating
-        size = (4, 4)
+        size = (8, 4)
         self.generator.setup(graph='Histogram')
         generator = self.generator.get_generator()
         hist = generator.generate(frame, size)
@@ -62,7 +62,7 @@ class Controller:
         self.generator.set_only_country()
 
         # generating
-        size = (4, 4)
+        size = (8, 4)
 
         self.generator.setup(graph='Histogram')
         generator = self.generator.get_generator()

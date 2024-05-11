@@ -89,8 +89,7 @@ class Storytelling(ttk.Frame):
         # frame
         for i in range(2, 3):
             self.rowconfigure(i, weight=1)
-        for i in range(3):
-            self.columnconfigure(i, weight=1)
+        self.columnconfigure(2, weight=3)
 
 
 class DataExploration(ttk.Frame):
@@ -137,7 +136,6 @@ class DataExploration(ttk.Frame):
         # frame
         for i in range(1):
             self.rowconfigure(i, weight=1)
-        self.columnconfigure(0, weight=2)
         self.columnconfigure(0, weight=1)
 
 
