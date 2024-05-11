@@ -698,7 +698,7 @@ class DefaultGraph:
 
     def graph5(self, frame: ttk.Frame, size):
         """
-        Death type (Age) (bar graph)
+        Speed limits (Urban) (bar graph)
 
         :param frame: ttk.Frame, Storytelling page
         :param size: tuple with length of 2. For example, (4, 3)
@@ -708,19 +708,33 @@ class DefaultGraph:
         fig = plt.figure(figsize=size)
 
         # bar graph
-        g5_df = copy.deepcopy(DF_OC)
-        g5_col = {'age_0_4': 'Under 5', 'age_5_14': '5-14 years', 'age_15_49': '15-49 years',
-                  'age_50_69': '50-69 years', 'age_70': '70+ years'}
-        for col in g5_col:
-            g5_df[g5_col[col]] = g5_df[col] / g5_df['population'] * 1e5
+        def speed_limit_urban(x):
+            if x < 50:
+                return (0, 49)
+            if x < 60:
+                return (50, 59)
+            if x < 70:
+                return (60, 69)
+            if x < 80:
+                return (70, 79)
+            else:
+                return '>=80'
 
-        age_arr = ['Under 5', '5-14 years', '15-49 years', '50-69 years', '70+ years']
-        g5_df = g5_df.groupby(['Entity'])[age_arr].mean().sum()
-        g5_df.plot.bar(rot=0, grid=True)
+        g5_df = copy.deepcopy(DF_OC)
+        urban_range_list = list(map(speed_limit_urban, g5_df['urban_speed_limit']))
+        g5_df['urban_range'] = urban_range_list
+        g5_df = g5_df.sort_values(by=['urban_speed_limit'])
+
+        g5_df = g5_df.groupby(['urban_range'])['death_rate'].mean()
+
+        g5_df.plot(kind='bar', stacked=False,
+                   title='Average annual global death rate for each '
+                         'urban speed limits range throughout 1990-2019',
+                   xlabel='Speed limit (km/h)',
+                   ylabel='Average death rate (deaths per 100,000 people)',
+                   rot=0, grid=True)
         plt.tick_params(axis='x', grid_linewidth=0)
-        plt.title('Average annual global death rate throughout 1990-2019 for each age range')
-        plt.xlabel('Age')
-        plt.ylabel('Death rate (deaths per 100,000 people)')
+
         plt.tight_layout()
 
         # Tkinter canvas that contain the figure
@@ -732,7 +746,7 @@ class DefaultGraph:
 
     def graph6(self, frame: ttk.Frame, size):
         """
-        Death type (Vehicle) (bar graph)
+        Speed limits (rural) (bar graph)
 
         :param frame: ttk.Frame, Storytelling page
         :param size: tuple with length of 2. For example, (4, 3)
@@ -742,20 +756,33 @@ class DefaultGraph:
         fig = plt.figure(figsize=size)
 
         # bar graph
-        g6_df = copy.deepcopy(DF_OC)
-        g6_col = {'type_pedestrian': 'pedestrian', 'type_motorvehicle': 'motor vehicle',
-                  'type_motorcyclist': 'motorcyclist', 'type_cyclist': 'cyclist',
-                  'type_other': 'other'}
-        for col in g6_col:
-            g6_df[g6_col[col]] = g6_df[col] / g6_df['population'] * 1e5
+        def speed_limit_rural(x):
+            if x < 80:
+                return (0, 79)
+            if x < 90:
+                return (80, 89)
+            if x < 100:
+                return (90, 99)
+            if x < 110:
+                return (100, 109)
+            else:
+                return '>=110'
 
-        type_arr = ['pedestrian', 'motor vehicle', 'motorcyclist', 'cyclist', 'other']
-        g6_df = g6_df.groupby(['Entity'])[type_arr].mean().sum()
-        g6_df.plot.bar(rot=0, grid=True)
+        g6_df = copy.deepcopy(DF_OC)
+        rural_range_list = list(map(speed_limit_rural, g6_df['rural_speed_limit']))
+        g6_df['rural_range'] = rural_range_list
+        g6_df = g6_df.sort_values(by=['rural_speed_limit'])
+
+        g6_df = g6_df.groupby(['rural_range'])['death_rate'].mean()
+
+        g6_df.plot(kind='bar', stacked=False,
+                   title='Average annual global death rate for each '
+                         'rural speed limits range throughout 1990-2019',
+                   xlabel='Speed limit (km/h)',
+                   ylabel='Average death rate (deaths per 100,000 people)',
+                   rot=0, grid=True)
         plt.tick_params(axis='x', grid_linewidth=0)
-        plt.title('Average annual global death rate throughout 1990-2019 for each type')
-        plt.xlabel('Type')
-        plt.ylabel('Death rate (deaths per 100,000 people)')
+
         plt.tight_layout()
 
         # Tkinter canvas that contain the figure
@@ -775,10 +802,10 @@ class DefaultGraphCatalog(Enum):
     SPD_RR_DRAT = {'label': 'Speed limits (Rural)/Death rate', 'func': DefaultGraph().graph2_rural}
     SPD_UB_DRAT = {'label': 'Speed limits (Urban)/Death rate', 'func': DefaultGraph().graph2_urban}
     SBL_DRAT = {'label': 'Seat-belt law/Death rate', 'func': DefaultGraph().graph1}
+    SPD_RR_BAR = {'label': 'Rural speed limits (Bar graph)', 'func': DefaultGraph().graph6}
+    SPD_UB_BAR = {'label': 'Urban speed limits (Bar graph)', 'func': DefaultGraph().graph5}
     AGE_PIE = {'label': 'Ages (Pie chart)', 'func': DefaultGraph().graph3}
     TYPE_PIE = {'label': 'Types (Pie chart)', 'func': DefaultGraph().graph4}
-    AGE_BAR = {'label': 'Ages (Bar graph)', 'func': DefaultGraph().graph5}
-    TYPE_BAR = {'label': 'Types (Bar graph)', 'func': DefaultGraph().graph6}
 
     @property
     def detail(self):
